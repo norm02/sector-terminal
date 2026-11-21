@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SECTOR TERMINAL // 10Y MARKET SIMULATOR</title>
+<style>
+  :root {
+    --bg: #0a0d12;
+    --panel: #11161f;
+    --panel-alt: #161d29;
+    --border: #263042;
+    --text: #e2e8f0;
+    --muted: #8b9bb4;
+    --green: #00e676;
+    --red: #ff3d57;
+    --amber: #ffab00;
+    --cyan: #00e5ff;
+    --magenta: #ff4081;
+    --font: 'SF Mono', 'Consolas', 'Meiryo', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  /* TOP BAR */
+  header {
+    height: 44px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .stats-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 13px;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+  .stat-item span.label { color: var(--muted); font-size: 11px; margin-right: 4px; }
+  .stat-val { color: var(--text); font-size: 14px; }
+  .stat-val.cash { color: var(--cyan); }
+  .stat-val.time { color: var(--amber); }
+
+  .top-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    max-width: 54%;
+  }
+  .countdown-pill {
+    background: rgba(255, 171, 0, 0.14);
+    border: 1px solid var(--amber);
+    color: #ffd54f;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .countdown-pill.urgent {
+    background: rgba(255, 61, 87, 0.22);
+    border-color: var(--red);
+    color: #ff8a9b;
+  }
+
+  /* TOAST AREA IN TOP BAR */
+  #toast-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+  }
+  .toast {
+    background: #1e2636;
+    border-left: 4px solid var(--amber);
+    padding: 4px 9px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    border-radius: 2px;
+    animation: popIn 0.2s ease-out;
+  }
+  .toast.hot { border-color: var(--red); color: #ff8a9b; }
+  .toast.cold { border-color: var(--cyan); color: #80f2ff; }
+  .toast.good { border-color: var(--green); color: #69f0ae; }
+  .toast.macro { border-color: var(--amber); color: #ffd54f; }
+  @keyframes popIn {
+    from { transform: translateY(-10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* MAIN LAYOUT: TOP MONITOR (56%) & BOTTOM DECK (44%) */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  #top-monitor {
+    height: 56%;
+    display: flex;
+    border-bottom: 2px solid var(--border);
+    min-height: 0;
+  }
+  #canvas-wrapper {
+    flex: 2;
+    position: relative;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+  }
+  .slot-controls {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .slot-header {
+    width: 50%;
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .slot-select {
+    pointer-events: auto;
+    background: rgba(17, 22, 31, 0.92);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    cursor: pointer;
+  }
+  canvas#marketCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: pointer;
+  }
+
+  /* ALL SECTORS 2x5 GRID */
+  #all-sectors {
+    flex: 1.15;
+    background: var(--panel);
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    min-width: 340px;
+  }
+  .panel-title {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .sector-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(5, 1fr);
+    gap: 5px;
+  }
+  .sec-card {
+    background: var(--panel-alt);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.1s, background 0.1s;
+  }
+  .sec-card:hover { border-color: var(--muted); }
+  .sec-card.active {
+    border: 2px solid var(--cyan);
+    background: #172638;
+  }
+  .sec-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .sec-bot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    margin-top: 2px;
+  }
+  .up { color: var(--green); }
+  .down { color: var(--red); }
+  .badge {
+    font-size: 10px;
+    padding: 0 4px;
+    border-radius: 2px;
+    font-weight: bold;
+  }
+  .badge.hot { background: rgba(255, 61, 87, 0.22); color: var(--red); }
+  .badge.val { background: rgba(0, 229, 255, 0.22); color: var(--cyan); }
+  .badge.fund { background: rgba(0, 230, 118, 0.2); color: var(--green); }
+
+  /* BOTTOM DECK: ACTION & FUNDAMENTALS (44%) */
+  #bottom-deck {
+    height: 44%;
+    background: var(--bg);
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+  }
+  .deck-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--panel);
+    border: 1px solid var(--cyan);
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    flex-shrink: 0;
+    gap: 10px;
+  }
+  .deck-sub {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: normal;
+  }
+  .deck-body {
+    flex: 1;
+    display: flex;
+    gap: 12px;
+    min-height: 0;
+  }
+  /* FUNDAMENTALS PANEL */
+  .fund-box {
+    flex: 1.05;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  .fund-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
+  }
+  .metric-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .metric-name { width: 42px; color: var(--muted); font-weight: bold; }
+  .metric-val { width: 72px; font-weight: bold; font-size: 14px; text-align: right; }
+  .bar-bg {
+    flex: 1;
+    height: 11px;
+    background: #0a0d12;
+    border: 1px solid var(--border);
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    transition: width 0.25s, background-color 0.25s;
+  }
+  .metric-tag { width: 82px; font-size: 11px; font-weight: bold; text-align: right; }
+
+  /* TRADE PANEL */
+  .trade-box {
+    flex: 1.3;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .trade-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
+  }
+  .btn-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+    margin-top: 6px;
+  }
+  button.trade-btn {
+    background: var(--panel-alt);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font);
+    padding: 7px 6px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s, transform 0.05s;
+  }
+  button.trade-btn:hover:not(:disabled) { background: #202a3c; }
+  button.trade-btn:active:not(:disabled) { transform: translateY(1px); }
+  button.trade-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  button.buy-btn { border-color: rgba(0, 230, 118, 0.5); }
+  button.buy-btn .act { color: var(--green); font-size: 13px; font-weight: bold; }
+  button.sell-btn { border-color: rgba(255, 61, 87, 0.5); }
+  button.sell-btn .act { color: var(--red); font-size: 13px; font-weight: bold; }
+  button.trade-btn .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* OVERLAY MODAL */
+  #overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 13, 18, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  .modal {
+    background: var(--panel);
+    border: 2px solid var(--cyan);
+    padding: 24px 32px;
+    max-width: 560px;
+    width: 92%;
+    text-align: center;
+  }
+  .modal h1 { font-size: 21px; color: var(--cyan); margin-bottom: 12px; }
+  .modal p { font-size: 13px; line-height: 1.65; color: var(--text); margin-bottom: 18px; text-align: left; }
+  .start-btn {
+    background: var(--cyan);
+    color: #000;
+    border: none;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: bold;
+    padding: 10px 28px;
+    cursor: pointer;
+  }
+  .start-btn:hover { opacity: 0.9; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="stats-group">
+    <div class="stat-item"><span class="label">総資産</span><span id="ui-total" class="stat-val">100,000円</span></div>
+    <div class="stat-item"><span class="label">現金</span><span id="ui-cash" class="stat-val cash">100,000円</span></div>
+    <div class="stat-item"><span class="label">経過</span><span id="ui-time" class="stat-val time">0Y 00M / 10Y</span></div>
+    <div class="stat-item"><span class="label">収支</span><span style="font-size:11px;color:var(--green);">+1.5万円/月</span></div>
+  </div>
+  <div class="top-right">
+    <div id="countdown-pill" class="countdown-pill" style="display:none;"></div>
+    <div id="toast-container"></div>
+  </div>
+</header>
+
+<main>
+  <!-- TOP MONITOR -->
+  <section id="top-monitor">
+    <div id="canvas-wrapper">
+      <div class="slot-controls">
+        <div class="slot-header">
+          <select id="sel-slot1" class="slot-select"></select>
+        </div>
+        <div class="slot-header">
+          <select id="sel-slot2" class="slot-select"></select>
+        </div>
+      </div>
+      <canvas id="marketCanvas"></canvas>
+    </div>
+
+    <div id="all-sectors">
+      <div class="panel-title">
+        <span>ALL SECTORS (クリックで下段操作へ)</span>
+        <span>🔥過熱 / 💎割安 / 📈好業績</span>
+      </div>
+      <div id="sector-grid" class="sector-grid"></div>
+    </div>
+  </section>
+
+  <!-- BOTTOM DECK -->
+  <section id="bottom-deck">
+    <div class="deck-header">
+      <div>
+        <span id="deck-title">操作中：【01. 半導体・AI】 現在値: 1,200円</span>
+        <span id="deck-sens" class="deck-sub"> (金利感応度: -1.4 / インフレ: -0.3)</span>
+      </div>
+      <div id="deck-holding">保有: 0口 / 評価損益: 0円</div>
+    </div>
+
+    <div class="deck-body">
+      <div class="fund-box">
+        <div class="fund-meta">
+          <span id="meta-eps">EPS: 60.0円 (予想: 60.0円)</span>
+          <span id="meta-bps">BPS: 500円</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-name">PER</span>
+          <span id="val-per" class="metric-val">20.0倍</span>
+          <div class="bar-bg"><div id="bar-per" class="bar-fill"></div></div>
+          <span id="tag-per" class="metric-tag">適正水準</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-name">PBR</span>
+          <span id="val-pbr" class="metric-val">2.40倍</span>
+          <div class="bar-bg"><div id="bar-pbr" class="bar-fill"></div></div>
+          <span id="tag-pbr" class="metric-tag">標準</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-name">ROE</span>
+          <span id="val-roe" class="metric-val">12.0%</span>
+          <div class="bar-bg"><div id="bar-roe" class="bar-fill"></div></div>
+          <span id="tag-roe" class="metric-tag">高収益</span>
+        </div>
+      </div>
+
+      <div class="trade-box">
+        <div class="trade-info">
+          <span id="info-power">買付可能: 83口 (現金 100,000円)</span>
+          <span id="info-avg">平均取得単価: - 円</span>
+        </div>
+        <div class="btn-grid">
+          <button id="btn-buy1" class="trade-btn buy-btn"><span class="act">BUY 1口</span><span id="sub-buy1" class="sub">-1,200円</span></button>
+          <button id="btn-buy5" class="trade-btn buy-btn"><span class="act">BUY 5口</span><span id="sub-buy5" class="sub">-6,000円</span></button>
+          <button id="btn-buyall" class="trade-btn buy-btn"><span class="act">BUY 全力</span><span id="sub-buyall" class="sub">83口 (-99,600円)</span></button>
+          <button id="btn-sell1" class="trade-btn sell-btn"><span class="act">SELL 1口</span><span id="sub-sell1" class="sub">+1,200円</span></button>
+          <button id="btn-sellhalf" class="trade-btn sell-btn"><span class="act">SELL 半分</span><span id="sub-sellhalf" class="sub">0口 (+0円)</span></button>
+          <button id="btn-sellall" class="trade-btn sell-btn"><span class="act">SELL 全部</span><span id="sub-sellall" class="sub">0口 (損益 0円)</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="overlay">
+  <div class="modal">
+    <h1 id="modal-title">SECTOR TERMINAL // 10Y SIM</h1>
+    <p id="modal-desc">
+      ・一時停止なしの<strong>10年間（120ヶ月・4分間）</strong>スコアアタック。<br>
+      ・初期資金 <strong>100,000円</strong>。毎月給与（+50,000円）と生活費（-35,000円）が発生し、現金マイナスで破産。<br>
+      ・チャート内の<strong>黄破線は理論株価</strong>、<strong>マゼンタ破線は平均取得単価</strong>。<br>
+      ・<strong>ニュースと業績の連動</strong>：大型受注や技術ブレイクはEPS・ROEを押し上げ、トラブルはEPS・BPS（自己資本）を削ります。3ヶ月ごとの決算では<strong>予想EPSとのサプライズ</strong>も発生！
+    </p>
+    <button id="btn-start" class="start-btn">MARKET OPEN (START)</button>
+  </div>
+</div>
+
+<script>
+const SECTORS_INIT = [
+  { id: 0, code: '01', name: '半導体・AI',    price: 1200, eps: 60.0, bps: 500,  basePer: 20, vol: 0.042, rateSens: -1.4, infSens: -0.3 },
+  { id: 1, code: '02', name: '銀行・金融',    price: 900,  eps: 90.0, bps: 1100, basePer: 10, vol: 0.024, rateSens:  1.6, infSens:  0.4 },
+  { id: 2, code: '03', name: '自動車・輸送',  price: 1000, eps: 100.0,bps: 1050, basePer: 10, vol: 0.030, rateSens: -0.4, infSens: -0.5 },
+  { id: 3, code: '04', name: '総合商社・資源',price: 1100, eps: 110.0,bps: 950,  basePer: 10, vol: 0.028, rateSens:  0.3, infSens:  1.5 },
+  { id: 4, code: '05', name: '医薬品・医療',  price: 1300, eps: 72.0, bps: 650,  basePer: 18, vol: 0.018, rateSens: -0.2, infSens:  0.0 },
+  { id: 5, code: '06', name: '食品・日用品',  price: 950,  eps: 63.3, bps: 600,  basePer: 15, vol: 0.014, rateSens: -0.1, infSens: -0.6 },
+  { id: 6, code: '07', name: '小売・EC',      price: 1050, eps: 65.6, bps: 550,  basePer: 16, vol: 0.028, rateSens: -0.5, infSens: -0.7 },
+  { id: 7, code: '08', name: '電力・インフラ',price: 800,  eps: 72.7, bps: 900,  basePer: 11, vol: 0.016, rateSens: -1.1, infSens: -0.9 },
+  { id: 8, code: '09', name: '不動産・建設',  price: 850,  eps: 77.3, bps: 1000, basePer: 11, vol: 0.032, rateSens: -1.6, infSens:  0.8 },
+  { id: 9, code: '10', name: 'エンタメ・IP',  price: 1150, eps: 63.9, bps: 500,  basePer: 18, vol: 0.038, rateSens: -0.6, infSens: -0.2 }
+];
+
+let state = {};
+const MONTHS_TOTAL = 120; // 10 years
+const MS_PER_MONTH = 2000; // 2.0s per month -> 4 mins total
+const TICK_MS = 250; // 8 ticks per month
+
+function fmtYen(v) {
+  return `${Math.round(v).toLocaleString()}円`;
+}
+
+function initGame() {
+  state = {
+    running: false,
+    cash: 100000,
+    ticks: 0,
+    month: 0,
+    nextMacroType: Math.random() < 0.5 ? '政策金利' : 'CPI',
+    slot1: 0,
+    slot2: 1,
+    activeId: 0,
+    sectors: SECTORS_INIT.map(s => ({
+      ...s,
+      expectedEps: s.eps,
+      epsMomentum: 0,
+      perMult: 1.0,
+      history: Array(48).fill(s.price),
+      fairHistory: Array(48).fill(s.price),
+      shares: 0,
+      avgCost: 0
+    }))
+  };
+  populateSelectors();
+  buildSectorGrid();
+  updateUI();
+  drawCanvas();
+}
+
+function populateSelectors() {
+  ['sel-slot1', 'sel-slot2'].forEach((elId, idx) => {
+    const sel = document.getElementById(elId);
+    sel.innerHTML = state.sectors.map(s => `<option value="${s.id}">SLOT ${idx+1}: ${s.code}.${s.name}</option>`).join('');
+    sel.value = idx === 0 ? state.slot1 : state.slot2;
+    sel.onchange = (e) => {
+      const val = parseInt(e.target.value, 10);
+      if (idx === 0) state.slot1 = val;
+      else state.slot2 = val;
+      state.activeId = val;
+      updateUI();
+      drawCanvas();
+    };
+  });
+}
+
+function buildSectorGrid() {
+  const grid = document.getElementById('sector-grid');
+  grid.innerHTML = state.sectors.map(s => `
+    <div class="sec-card" id="card-${s.id}" onclick="selectSector(${s.id})">
+      <div class="sec-top">
+        <span>${s.code}.${s.name}</span>
+        <span id="card-price-${s.id}">${fmtYen(s.price)}</span>
+      </div>
+      <div class="sec-bot">
+        <span id="card-chg-${s.id}" class="up">+0.0%</span>
+        <span id="card-badge-${s.id}"></span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectSector(id) {
+  state.activeId = id;
+  updateUI();
+  drawCanvas();
+}
+
+function addToast(text, type = 'macro') {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = text;
+  container.prepend(el);
+  if (container.children.length > 2) container.lastChild.remove();
+  setTimeout(() => { if (el.parentNode) el.remove(); }, 5000);
+}
+
+function updateCountdownPill() {
+  const pill = document.getElementById('countdown-pill');
+  const mod6 = state.month % 6;
+  const remainingToMacro = (6 - mod6) % 6 || 6;
+  if (remainingToMacro <= 2 && state.month < MONTHS_TOTAL) {
+    pill.style.display = 'inline-block';
+    pill.textContent = `📢 ${state.nextMacroType}発表まで あと${remainingToMacro}M`;
+    pill.className = remainingToMacro === 1 ? 'countdown-pill urgent' : 'countdown-pill';
+  } else {
+    pill.style.display = 'none';
+  }
+}
+
+function triggerEvents() {
+  // 1. Flash sector news tied to fundamentals & sentiment
+  if (Math.random() < 0.28) {
+    const s = state.sectors[Math.floor(Math.random() * state.sectors.length)];
+    const roll = Math.random();
+    if (roll < 0.28) {
+      // Fundamental boost: EPS & expected EPS increase, ROE improves
+      s.eps *= 1.12;
+      s.expectedEps = Math.max(s.expectedEps, s.eps * 0.98);
+      s.epsMomentum = Math.min(0.15, s.epsMomentum + 0.05);
+      s.perMult = Math.min(2.2, s.perMult + 0.12);
+      addToast(`📈 ${s.name} 大型受注・新技術でEPS増益`, 'good');
+    } else if (roll < 0.56) {
+      // Pure hype / overheated multiple
+      s.perMult = Math.min(2.4, s.perMult + 0.35 + Math.random() * 0.25);
+      addToast(`🔥 ${s.name} 期待先行で過熱買い殺到`, 'hot');
+    } else if (roll < 0.80) {
+      // Fundamental damage: EPS & BPS drop (equity eroded)
+      s.eps = Math.max(15.0, s.eps * 0.88);
+      s.bps = Math.max(100.0, s.bps * 0.94);
+      s.epsMomentum = Math.max(-0.15, s.epsMomentum - 0.05);
+      s.perMult = Math.max(0.45, s.perMult - 0.15);
+      addToast(`⚠️ ${s.name} 不具合・損失計上でEPS/BPS減`, 'cold');
+    } else {
+      // Panic selloff while fundamentals hold
+      s.perMult = Math.max(0.45, s.perMult - (0.28 + Math.random() * 0.2));
+      addToast(`💧 ${s.name} 悪材料連想でパニック売り`, 'cold');
+    }
+  }
+
+  // 2. Macro indicators every 6 months -> affects both perMult and EPS growth
+  if (state.month > 0 && state.month % 6 === 0) {
+    const surprise = (Math.random() > 0.5 ? 1 : -1) * (0.6 + Math.random() * 0.8);
+    if (state.nextMacroType === '政策金利') {
+      const label = surprise > 0 ? '📊 政策金利 予想上回る利上げ' : '📊 政策金利 利下げ転換';
+      addToast(label, 'macro');
+      state.sectors.forEach(s => {
+        s.perMult = Math.max(0.45, Math.min(2.4, s.perMult + s.rateSens * surprise * 0.16));
+        const epsDelta = s.rateSens * surprise * 0.035;
+        s.eps = Math.max(15.0, s.eps * (1 + epsDelta));
+        s.expectedEps = Math.max(15.0, s.expectedEps * (1 + epsDelta * 0.7));
+      });
+    } else {
+      const label = surprise > 0 ? '📊 CPI上振れ インフレ加速' : '📊 CPI鈍化 物価落ち着き';
+      addToast(label, 'macro');
+      state.sectors.forEach(s => {
+        s.perMult = Math.max(0.45, Math.min(2.4, s.perMult + s.infSens * surprise * 0.16));
+        const epsDelta = s.infSens * surprise * 0.035;
+        s.eps = Math.max(15.0, s.eps * (1 + epsDelta));
+        s.expectedEps = Math.max(15.0, s.expectedEps * (1 + epsDelta * 0.7));
+      });
+    }
+    state.nextMacroType = state.nextMacroType === '政策金利' ? 'CPI' : '政策金利';
+  }
+
+  // 3. Quarterly earnings every 3 months -> surprise vs consensus & mean reversion
+  if (state.month > 0 && state.month % 3 === 0) {
+    let beatCount = 0;
+    let missCount = 0;
+    state.sectors.forEach(s => {
+      const baseGrowth = 1 + (Math.random() - 0.44) * 0.07 + s.epsMomentum;
+      const actualEps = Math.max(15.0, s.eps * baseGrowth);
+      const beatRatio = (actualEps - s.expectedEps) / Math.max(1, s.expectedEps);
+
+      s.eps = actualEps;
+      s.bps = Math.max(100.0, s.bps + s.eps * 0.14);
+      s.epsMomentum *= 0.5;
+
+      // Earnings surprise adjusts perMult; overheated stocks revert toward 1.0
+      const surpriseBoost = Math.max(-0.25, Math.min(0.25, beatRatio * 1.2));
+      s.perMult = 1.0 + (s.perMult - 1.0) * 0.45 + surpriseBoost;
+      s.perMult = Math.max(0.45, Math.min(2.4, s.perMult));
+
+      // Set next quarter's consensus expectation slightly ahead of current EPS
+      s.expectedEps = s.eps * (1 + (Math.random() - 0.35) * 0.06);
+
+      if (beatRatio > 0.04) beatCount++;
+      else if (beatRatio < -0.04) missCount++;
+    });
+    addToast(`📑 四半期決算：上振れ${beatCount}社 / 下振れ${missCount}社`, 'macro');
+  }
+}
+
+function stepTick() {
+  if (!state.running) return;
+  state.ticks++;
+  const prevMonth = state.month;
+  state.month = Math.floor((state.ticks * TICK_MS) / MS_PER_MONTH);
+
+  // Update prices
+  state.sectors.forEach(s => {
+    s.perMult += (1.0 - s.perMult) * 0.018 + (Math.random() - 0.5) * s.vol * 1.3;
+    s.perMult = Math.max(0.42, Math.min(2.5, s.perMult));
+    const fair = s.eps * s.basePer;
+    const noise = 1 + (Math.random() - 0.5) * s.vol;
+    s.price = Math.max(50.0, fair * s.perMult * noise);
+    s.history.push(s.price);
+    s.fairHistory.push(fair);
+    if (s.history.length > 48) { s.history.shift(); s.fairHistory.shift(); }
+  });
+
+  // Monthly cashflow & events
+  if (state.month > prevMonth) {
+    state.cash += 50000 - 35000; // Salary +50,000円, Living cost -35,000円
+    if (state.cash < 0) {
+      endGame(true);
+      return;
+    }
+    if (state.month >= MONTHS_TOTAL) {
+      endGame(false);
+      return;
+    }
+    triggerEvents();
+  }
+
+  updateCountdownPill();
+  updateUI();
+  drawCanvas();
+}
+
+function buy(qty) {
+  const s = state.sectors[state.activeId];
+  const maxQty = Math.floor(state.cash / s.price);
+  const actualQty = Math.min(qty, maxQty);
+  if (actualQty <= 0) return;
+  const cost = actualQty * s.price;
+  s.avgCost = (s.avgCost * s.shares + cost) / (s.shares + actualQty);
+  s.shares += actualQty;
+  state.cash -= cost;
+  updateUI();
+  drawCanvas();
+}
+
+function sell(qty) {
+  const s = state.sectors[state.activeId];
+  const actualQty = Math.min(qty, s.shares);
+  if (actualQty <= 0) return;
+  state.cash += actualQty * s.price;
+  s.shares -= actualQty;
+  if (s.shares === 0) s.avgCost = 0;
+  updateUI();
+  drawCanvas();
+}
+
+function updateUI() {
+  const stockVal = state.sectors.reduce((acc, s) => acc + s.shares * s.price, 0);
+  const total = state.cash + stockVal;
+  const y = Math.floor(state.month / 12);
+  const m = state.month % 12;
+
+  document.getElementById('ui-total').textContent = fmtYen(total);
+  document.getElementById('ui-cash').textContent = fmtYen(state.cash);
+  document.getElementById('ui-time').textContent = `${y}Y ${String(m).padStart(2,'0')}M / 10Y`;
+
+  // Update sector cards
+  state.sectors.forEach(s => {
+    const card = document.getElementById(`card-${s.id}`);
+    card.className = `sec-card ${s.id === state.activeId ? 'active' : ''}`;
+    document.getElementById(`card-price-${s.id}`).textContent = fmtYen(s.price);
+    const prev = s.history[Math.max(0, s.history.length - 8)];
+    const chg = ((s.price - prev) / prev) * 100;
+    const chgEl = document.getElementById(`card-chg-${s.id}`);
+    chgEl.textContent = `${chg >= 0 ? '+' : ''}${chg.toFixed(1)}%`;
+    chgEl.className = chg >= 0 ? 'up' : 'down';
+
+    const roe = (s.eps / s.bps) * 100;
+    const badgeEl = document.getElementById(`card-badge-${s.id}`);
+    if (s.perMult >= 1.32) {
+      badgeEl.innerHTML = `<span class="badge hot">🔥過熱</span>`;
+    } else if (s.perMult <= 0.78) {
+      badgeEl.innerHTML = `<span class="badge val">💎割安</span>`;
+    } else if (roe >= 13.5) {
+      badgeEl.innerHTML = `<span class="badge fund">📈高ROE</span>`;
+    } else {
+      badgeEl.innerHTML = '';
+    }
+  });
+
+  // Update bottom deck for active sector
+  const act = state.sectors[state.activeId];
+  const pnl = act.shares > 0 ? (act.price - act.avgCost) * act.shares : 0;
+  const pnlStr = `${pnl >= 0 ? '+' : ''}${fmtYen(pnl)}`;
+  document.getElementById('deck-title').textContent = `操作中：【${act.code}. ${act.name}】 現在値: ${fmtYen(act.price)}`;
+  document.getElementById('deck-sens').textContent = ` (金利感応度: ${act.rateSens > 0 ? '+' : ''}${act.rateSens} / インフレ: ${act.infSens > 0 ? '+' : ''}${act.infSens})`;
+  const holdEl = document.getElementById('deck-holding');
+  holdEl.textContent = `保有: ${act.shares}口 / 評価損益: ${pnlStr}`;
+  holdEl.style.color = pnl > 0 ? 'var(--green)' : (pnl < 0 ? 'var(--red)' : 'var(--text)');
+
+  // Fundamentals: EPS, BPS, PER, PBR, ROE
+  const per = act.price / act.eps;
+  const pbr = act.price / act.bps;
+  const roe = (act.eps / act.bps) * 100;
+
+  document.getElementById('meta-eps').textContent = `EPS: ${act.eps.toFixed(1)}円 (予想: ${act.expectedEps.toFixed(1)}円)`;
+  document.getElementById('meta-bps').textContent = `BPS: ${Math.round(act.bps).toLocaleString()}円`;
+
+  document.getElementById('val-per').textContent = `${per.toFixed(1)}倍`;
+  const perRatio = Math.min(100, Math.max(10, (per / (act.basePer * 1.8)) * 100));
+  const barPer = document.getElementById('bar-per');
+  barPer.style.width = `${perRatio}%`;
+  barPer.style.backgroundColor = act.perMult <= 0.82 ? 'var(--cyan)' : (act.perMult >= 1.3 ? 'var(--red)' : 'var(--green)');
+  document.getElementById('tag-per').textContent = act.perMult <= 0.82 ? '💎割安' : (act.perMult >= 1.3 ? '🔥過熱' : '適正水準');
+
+  document.getElementById('val-pbr').textContent = `${pbr.toFixed(2)}倍`;
+  const pbrRatio = Math.min(100, Math.max(10, (pbr / 2.5) * 100));
+  const barPbr = document.getElementById('bar-pbr');
+  barPbr.style.width = `${pbrRatio}%`;
+  barPbr.style.backgroundColor = pbr < 1.0 ? 'var(--cyan)' : 'var(--amber)';
+  document.getElementById('tag-pbr').textContent = pbr < 1.0 ? '資産割安' : '標準';
+
+  document.getElementById('val-roe').textContent = `${roe.toFixed(1)}%`;
+  const roeRatio = Math.min(100, Math.max(10, (roe / 20) * 100));
+  const barRoe = document.getElementById('bar-roe');
+  barRoe.style.width = `${roeRatio}%`;
+  barRoe.style.backgroundColor = roe >= 12 ? 'var(--green)' : (roe >= 8 ? 'var(--amber)' : 'var(--red)');
+  document.getElementById('tag-roe').textContent = roe >= 12 ? '高収益' : (roe >= 8 ? '良好' : '収益低下');
+
+  // Trade buttons
+  const maxBuy = Math.floor(state.cash / act.price);
+  document.getElementById('info-power').textContent = `買付可能: ${maxBuy}口 (現金 ${fmtYen(state.cash)})`;
+  document.getElementById('info-avg').textContent = `平均取得単価: ${act.shares > 0 ? fmtYen(act.avgCost) : '- 円'}`;
+
+  document.getElementById('btn-buy1').disabled = maxBuy < 1;
+  document.getElementById('sub-buy1').textContent = `-${fmtYen(act.price)}`;
+
+  document.getElementById('btn-buy5').disabled = maxBuy < 5;
+  document.getElementById('sub-buy5').textContent = `-${fmtYen(act.price * 5)}`;
+
+  document.getElementById('btn-buyall').disabled = maxBuy < 1;
+  document.getElementById('sub-buyall').textContent = `${maxBuy}口 (-${fmtYen(act.price * maxBuy)})`;
+
+  const halfSell = Math.floor(act.shares / 2);
+  document.getElementById('btn-sell1').disabled = act.shares < 1;
+  document.getElementById('sub-sell1').textContent = `+${fmtYen(act.price)}`;
+
+  document.getElementById('btn-sellhalf').disabled = halfSell < 1;
+  document.getElementById('sub-sellhalf').textContent = `${halfSell}口 (+${fmtYen(act.price * halfSell)})`;
+
+  document.getElementById('btn-sellall').disabled = act.shares < 1;
+  document.getElementById('sub-sellall').textContent = `${act.shares}口 (${pnlStr})`;
+}
+
+function drawCanvas() {
+  const canvas = document.getElementById('marketCanvas');
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+
+  ctx.fillStyle = '#0d1117';
+  ctx.fillRect(0, 0, w, h);
+
+  const halfW = w / 2;
+  drawChartSlot(ctx, state.sectors[state.slot1], 0, 0, halfW, h);
+  drawChartSlot(ctx, state.sectors[state.slot2], halfW, 0, halfW, h);
+
+  // Center divider
+  ctx.strokeStyle = '#263042';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(halfW, 0);
+  ctx.lineTo(halfW, h);
+  ctx.stroke();
+}
+
+function drawChartSlot(ctx, sec, ox, oy, w, h) {
+  const padT = 36, padB = 18, padL = 12, padR = 58;
+  const cw = w - padL - padR;
+  const ch = h - padT - padB;
+
+  const extraVals = sec.shares > 0 ? [sec.avgCost] : [];
+  const allVals = sec.history.concat(sec.fairHistory, extraVals);
+  const minV = Math.min(...allVals) * 0.94;
+  const maxV = Math.max(...allVals) * 1.06;
+  const range = Math.max(1, maxV - minV);
+
+  const toY = (val) => oy + padT + ch - ((val - minV) / range) * ch;
+
+  // Grid lines
+  ctx.strokeStyle = '#1b2332';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 3; i++) {
+    const y = oy + padT + (ch / 3) * i;
+    ctx.beginPath();
+    ctx.moveTo(ox + padL, y);
+    ctx.lineTo(ox + padL + cw, y);
+    ctx.stroke();
+    const val = maxV - (range / 3) * i;
+    ctx.fillStyle = '#8b9bb4';
+    ctx.font = '11px monospace';
+    ctx.fillText(`${Math.round(val)}`, ox + padL + cw + 6, y + 4);
+  }
+
+  // Fair value dashed line (amber)
+  ctx.strokeStyle = '#ffab00';
+  ctx.setLineDash([4, 4]);
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  sec.fairHistory.forEach((v, i) => {
+    const x = ox + padL + (i / (sec.fairHistory.length - 1)) * cw;
+    const y = toY(v);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Average acquisition cost horizontal line (magenta)
+  if (sec.shares > 0) {
+    const avgY = toY(sec.avgCost);
+    ctx.strokeStyle = '#ff4081';
+    ctx.setLineDash([6, 3]);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(ox + padL, avgY);
+    ctx.lineTo(ox + padL + cw, avgY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#ff80ab';
+    ctx.font = 'bold 11px monospace';
+    ctx.fillText(`AVG ${Math.round(sec.avgCost)}`, ox + padL + 4, Math.max(oy + padT + 10, avgY - 4));
+  }
+
+  // Actual price line
+  const isUp = sec.price >= sec.fairHistory[sec.fairHistory.length - 1];
+  ctx.strokeStyle = isUp ? '#00e676' : '#00e5ff';
+  ctx.lineWidth = 2.2;
+  ctx.beginPath();
+  sec.history.forEach((v, i) => {
+    const x = ox + padL + (i / (sec.history.length - 1)) * cw;
+    const y = toY(v);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Current price label top-right of slot
+  ctx.fillStyle = '#e2e8f0';
+  ctx.font = 'bold 13px monospace';
+  ctx.fillText(fmtYen(sec.price), ox + w - 95, oy + 22);
+}
+
+function endGame(bankrupt) {
+  state.running = false;
+  const stockVal = state.sectors.reduce((acc, s) => acc + s.shares * s.price, 0);
+  const total = Math.round(state.cash + stockVal);
+  let rank = 'C';
+  if (!bankrupt) {
+    if (total >= 500000) rank = 'S (LEGEND)';
+    else if (total >= 300000) rank = 'A (MASTER)';
+    else if (total >= 180000) rank = 'B (PRO)';
+  } else {
+    rank = 'F (BANKRUPT)';
+  }
+
+  document.getElementById('modal-title').textContent = bankrupt ? 'GAME OVER // 資金ショート' : '10 YEARS COMPLETE // RESULT';
+  document.getElementById('modal-desc').innerHTML = `
+    最終総資産: <strong style="color:var(--cyan);font-size:18px;">${fmtYen(total)}</strong><br>
+    評価ランク: <strong style="color:var(--amber);font-size:18px;">${rank}</strong><br><br>
+    ${bankrupt ? '生活費の引き落としにより現金がマイナスになりました。' : '10年間のマーケットを生き抜きました！'}
+  `;
+  document.getElementById('btn-start').textContent = 'PLAY AGAIN';
+  document.getElementById('overlay').style.display = 'flex';
+}
+
+// Event bindings
+document.getElementById('btn-buy1').onclick = () => buy(1);
+document.getElementById('btn-buy5').onclick = () => buy(5);
+document.getElementById('btn-buyall').onclick = () => buy(999999);
+document.getElementById('btn-sell1').onclick = () => sell(1);
+document.getElementById('btn-sellhalf').onclick = () => sell(Math.floor(state.sectors[state.activeId].shares / 2));
+document.getElementById('btn-sellall').onclick = () => sell(999999);
+
+document.getElementById('marketCanvas').onclick = (e) => {
+  const rect = e.target.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  state.activeId = x < rect.width / 2 ? state.slot1 : state.slot2;
+  updateUI();
+  drawCanvas();
+};
+
+document.getElementById('btn-start').onclick = () => {
+  initGame();
+  document.getElementById('overlay').style.display = 'none';
+  state.running = true;
+};
+
+window.addEventListener('resize', drawCanvas);
+initGame();
+setInterval(stepTick, TICK_MS);
+</script>
+</body>
+</html>
