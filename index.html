@@ -27,18 +27,31 @@
     height: 100vh;
     width: 100vw;
     overflow: hidden;
+  }
+  /* 基準サイズ1280×720のステージを、画面に合わせて拡大縮小する */
+  #stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1280px;
+    height: 720px;
+    transform-origin: 0 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
   }
   /* TOP BAR */
   header {
-    height: 44px;
+    min-height: 44px;
+    flex-wrap: wrap;
+    row-gap: 4px;
     background: var(--panel);
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 12px;
+    padding: 4px 12px;
     gap: 10px;
     flex-shrink: 0;
   }
@@ -48,7 +61,10 @@
     gap: 14px;
     font-size: 13px;
     font-weight: bold;
-    flex-shrink: 0;
+    flex: 0 1 auto;
+    min-width: 0;
+    flex-wrap: wrap;
+    row-gap: 2px;
   }
   .stat-item span.label { color: var(--muted); font-size: 11px; margin-right: 4px; }
   .stat-val { color: var(--text); font-size: 14px; }
@@ -60,8 +76,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    overflow: hidden;
-    max-width: 46%;
+    flex-shrink: 0;
+    margin-left: auto;
   }
   .countdown-pill {
     background: rgba(255, 171, 0, 0.14);
@@ -182,6 +198,12 @@
     flex-direction: column;
   }
   #canvas-area { flex: 1; min-height: 0; position: relative; }
+  .line-bar { display: flex; align-items: center; gap: 6px; flex-shrink: 0; padding: 3px 10px; border-bottom: 1px solid var(--border); background: var(--panel); }
+  .lb-label { font-size: 11px; color: var(--muted); font-weight: bold; margin-right: 2px; }
+  .line-chip { display: flex; align-items: center; gap: 5px; background: var(--panel-alt); color: var(--muted); border: 1px solid var(--border); font-family: var(--font); font-size: 11px; padding: 2px 9px; cursor: pointer; opacity: 0.5; }
+  .line-chip:hover { border-color: var(--muted); }
+  .line-chip.on { color: var(--text); border-color: var(--muted); font-weight: bold; opacity: 1; }
+  .line-chip i { display: inline-block; width: 12px; height: 3px; }
   canvas#marketCanvas {
     position: absolute;
     inset: 0;
@@ -251,7 +273,8 @@
     background-position: right 8px center;
     background-size: 40px;
     border: 1px solid var(--border);
-    padding: 2px 8px;
+    padding: 1px 8px;
+    line-height: 1.1;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -279,9 +302,9 @@
     justify-content: space-between;
     align-items: center;
     font-size: 11px;
-    margin-top: 2px;
+    margin-top: 1px;
   }
-  .sec-hold { font-size: 10px; margin-top: 2px; min-height: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; }
+  .sec-hold { font-size: 10px; margin-top: 1px; min-height: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; }
   .sec-blank { visibility: hidden; }
   .sec-card.held { box-shadow: inset 3px 0 0 var(--magenta); }
   .sec-card.active.held { box-shadow: inset 0 0 0 1px var(--cyan), inset 3px 0 0 var(--magenta); }
@@ -384,14 +407,14 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 7px;
-    margin-top: 6px;
+    margin-top: 4px;
   }
   button.trade-btn {
     background: var(--panel-alt);
     border: 1px solid var(--border);
     color: var(--text);
     font-family: var(--font);
-    padding: 7px 6px;
+    padding: 5px 6px;
     cursor: pointer;
     display: flex;
     flex-direction: column;
@@ -409,8 +432,8 @@
   button.trade-btn .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
   button.trade-btn .sub.qty { font-size: 13px; font-weight: bold; color: var(--text); }
 
-  .cash-row { display: flex; justify-content: flex-end; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); padding: 3px 0; }
-  .cash-row .mini-btn { padding: 4px 10px; }
+  .cash-row { display: flex; justify-content: flex-end; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); padding: 1px 0; }
+  .cash-row .mini-btn { padding: 2px 10px; }
   .mini-btn { background: var(--panel-alt); border: 1px solid var(--border); color: var(--text); font-family: var(--font); font-size: 11px; font-weight: bold; padding: 4px 2px; cursor: pointer; white-space: nowrap; }
   .mini-btn:hover:not(:disabled) { background: #202a3c; }
   .mini-btn:disabled { opacity: 0.35; cursor: not-allowed; }
@@ -464,6 +487,7 @@
 </style>
 </head>
 <body>
+<div id="stage">
 
 <header>
   <div class="stats-group">
@@ -476,6 +500,7 @@
   </div>
   <div class="top-right">
     <button id="btn-settings" class="mute-btn" data-i18n-title="tip_settings" title="設定">⚙</button>
+    <button id="btn-bgm" class="mute-btn" data-i18n-title="bgm_title" title="BGM ON/OFF">🎵</button>
     <button id="btn-mute" class="mute-btn" data-i18n-title="mute_title" title="効果音 ON/OFF（Mキー）">🔊</button>
     <div id="countdown-pill" class="countdown-pill" style="display:none;"></div>
   </div>
@@ -490,6 +515,7 @@
   <!-- TOP MONITOR -->
   <section id="top-monitor">
     <div id="canvas-wrapper">
+      <div class="line-bar"><span class="lb-label" data-i18n="ln_title"></span><button class="line-chip on" data-line="fair"><i style="background:#ffab00"></i><span data-i18n="ln_fair"></span></button><button class="line-chip on" data-line="ma25"><i style="background:#4fc3f7"></i><span data-i18n="ln_ma25"></span></button><button class="line-chip on" data-line="ma200"><i style="background:#b388ff"></i><span data-i18n="ln_ma200"></span></button></div>
       <div id="canvas-area"><canvas id="marketCanvas"></canvas></div>
       <div class="slot-bar">
         <div class="slot-header" id="slot-h1"><span class="slot-tag">01</span><select id="sel-slot1" class="slot-select"></select></div>
@@ -565,6 +591,8 @@
 
 </div>
 
+</div><!-- /#stage -->
+
 <script>
 const SECTORS_INIT = [
   { id: 0,  code: '01', emoji: '💻', name: '情報技術',       ex: 'ソフト・半導体',     price: 1600, basePer: 28, roe: 0.25, vol: 0.045, mb: 1.20, drift: 0.012, payout: 0.20, fx: true, desc: 'ソフトウェア・半導体・IT機器の会社。成長が速いぶん値動きも大きく、金利上昇に弱い' },
@@ -593,7 +621,7 @@ const I18N = {
     tip_pnl: '総資産 − 元本。元本は「初期資金＋これまでの投資可能余剰の合計」です。配当も含みます。プラスなら、運用で増やせています',
     tip_flow: '毎月の給与 − 生活費（＝毎月投資できるお金）。物価のニュースで生活費が上がると減ります。現金が足りない月は、保有ETFが自動で売られます',
     tip_fx: '1ドルが何円か。数字が大きいほど円安。米国のETFは円建てなので、円安で有利・円高で不利になります',
-    mute_title: '効果音 ON/OFF（Mキー）', news_empty: '— ニュース待機中 —',
+    mute_title: '効果音 ON/OFF（Mキー）', bgm_title: 'BGM ON/OFF', news_empty: '— ニュース待機中 —',
     sec_title: 'ALL ETF (クリックで下段操作へ)', sec_legend: '🔥過熱 / 💎割安 / 📈高ROE',
     asset_title: '総資産の推移（白線）',
     asset_legend: '<i class="dash"></i>元本 <b style="color:var(--cyan)">･･積立(日本)</b> <b style="color:var(--magenta)">･･積立(米国)</b>',
@@ -609,7 +637,7 @@ const I18N = {
     hold_line: '保有 {n}口 ・ {val} ・ {pl}', card_note: '{ex} ・ 配当{y}%',
     b_hot: '🔥過熱', b_cheap: '💎割安', b_roe: '📈高ROE',
     fx_weak: '▲円安', fx_strong: '▼円高',
-    ch_fair: '理論株価 {v}', ch_ma: '200日線 {v}', ch_vol: '出来高',
+    ls_fair: '理論', ls_ma25: '25日', ls_ma200: '200日', ch_fair: '理論株価 {v}', ch_ma: '200日線 {v}', ch_ma25: '25日線 {v}', ln_title: '表示', ln_fair: '理論株価', ln_ma25: '25日線', ln_ma200: '200日線', ch_vol: '出来高',
     ch_gap: '理論株価比 {g}% {verdict}', ch_ma_gap: '200日線比 {g}% {dir}', ch_up: '(上)', ch_down: '(下)',
     v_cheap: '💎割安', v_hot: '🔥過熱', v_fair: '適正圏', legend_cash: '現金',
     toast_good: '📈 {name} 大型受注・新技術でEPS増益', toast_hot: '🔥 {name} 期待先行で過熱買い殺到',
@@ -652,7 +680,7 @@ const I18N = {
     tip_pnl: 'Net worth − principal. Principal = initial cash + cumulative monthly investable cash. Dividends count. Positive means your investing is adding value.',
     tip_flow: 'Monthly salary − living costs (= cash you can invest each month). Inflation news raises living costs. When cash runs short, holdings are sold automatically.',
     tip_fx: 'Yen per dollar. A higher number means a weaker yen. The Japan Total ETF is yen-based, so a weaker yen lowers its dollar value.',
-    mute_title: 'Sound ON/OFF (M key)', news_empty: '— Waiting for news —',
+    mute_title: 'Sound ON/OFF (M key)', bgm_title: 'Music ON/OFF', news_empty: '— Waiting for news —',
     sec_title: 'ALL ETFs (click to trade below)', sec_legend: '🔥Hot / 💎Cheap / 📈High ROE',
     asset_title: 'Net worth over time (white)',
     asset_legend: '<i class="dash"></i>Principal <b style="color:var(--cyan)">･･DCA Japan</b> <b style="color:var(--magenta)">･･DCA US</b>',
@@ -668,7 +696,7 @@ const I18N = {
     hold_line: 'Held {n} sh · {val} · {pl}', card_note: '{ex} · Div. {y}%',
     b_hot: '🔥Hot', b_cheap: '💎Cheap', b_roe: '📈High ROE',
     fx_weak: '▲Weak ¥', fx_strong: '▼Strong ¥',
-    ch_fair: 'Fair value {v}', ch_ma: '200-day MA {v}', ch_vol: 'Volume',
+    ls_fair: 'Fair', ls_ma25: '25D', ls_ma200: '200D', ch_fair: 'Fair value {v}', ch_ma: '200-day MA {v}', ch_ma25: '25-day MA {v}', ln_title: 'Show', ln_fair: 'Fair value', ln_ma25: '25-day MA', ln_ma200: '200-day MA', ch_vol: 'Volume',
     ch_gap: 'vs fair value {g}% {verdict}', ch_ma_gap: 'vs 200-day MA {g}% {dir}', ch_up: '(above)', ch_down: '(below)',
     v_cheap: '💎Cheap', v_hot: '🔥Hot', v_fair: 'Fair range', legend_cash: 'Cash',
     toast_good: '📈 {name}: big orders and new tech lift EPS', toast_hot: '🔥 {name}: hype triggers a buying frenzy',
@@ -762,6 +790,7 @@ const TICKS_PER_MONTH = MS_PER_MONTH / TICK_MS;
 const HIST_LEN = 200;
 const VIEW_TICKS = 96;
 const MA_LONG = 80;
+const MA_SHORT = 10;
 const MKT_KAPPA = 0.006;
 const FX_SIGMA = 1.7;
 function gauss() { return Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(2 * Math.PI * Math.random()); }
@@ -847,6 +876,211 @@ function toggleMute() {
   if (!sfxMuted) { ensureAudio(); playSfx('toast-macro'); }
 }
 
+// ===== BGM（Web Audioで生成。音源ファイル不要） =====
+const BGM = {
+  on: (() => { try { return localStorage.getItem('st_bgm') !== '0'; } catch (e) { return true; } })(),
+  active: false, mood: 'calm', prev: null, fadeUntil: 0, since: 0,
+  ddS: 0, pnlS: 0, master: null, noise: null, timer: null, buses: {}, voices: {}
+};
+const BGM_MIN_DWELL = 80;       // 最低滞在: 80ティック＝10か月
+const BGM_AHEAD = 0.35;
+const BGM_LEVEL = { calm: 1, bull: 1.3, crisis: 0.45 };
+const mf = (m) => 440 * Math.pow(2, (m - 69) / 12);
+
+function bgmTone(bus, t, m, dur, o) {
+  const c = audioCtx, osc = c.createOscillator(), g = c.createGain();
+  osc.type = o.type || 'sine';
+  osc.frequency.setValueAtTime(mf(m), t);
+  if (o.det) osc.detune.value = o.det;
+  const a = o.a ?? 0.01, v = o.v ?? 0.1;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(v, t + a);
+  if (!o.pluck) {
+    const rel = Math.max(0.02, Math.min(o.r ?? 0.3, dur - a - 0.02));
+    g.gain.setValueAtTime(v, t + dur - rel);
+  }
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  if (o.lp) {
+    const f = c.createBiquadFilter();
+    f.type = 'lowpass'; f.frequency.value = o.lp;
+    osc.connect(f); f.connect(g);
+  } else osc.connect(g);
+  g.connect(bus);
+  osc.start(t); osc.stop(t + dur + 0.05);
+}
+function bgmDrum(bus, t, f0, f1, len, v) {
+  const c = audioCtx, osc = c.createOscillator(), g = c.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(f0, t);
+  osc.frequency.exponentialRampToValueAtTime(f1, t + len * 0.6);
+  g.gain.setValueAtTime(v, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+  osc.connect(g); g.connect(bus);
+  osc.start(t); osc.stop(t + len + 0.03);
+}
+function bgmHat(bus, t, v, len) {
+  const c = audioCtx, src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+  src.buffer = BGM.noise;
+  f.type = 'highpass'; f.frequency.value = 7000;
+  g.gain.setValueAtTime(v, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+  src.connect(f); f.connect(g); g.connect(bus);
+  src.start(t); src.stop(t + len + 0.02);
+}
+
+// 各ムード: 1小節=8分音符8ステップ
+const BGM_MOODS = {
+  // 平常: ゆったりしたアルペジオ
+  calm: {
+    bpm: 88,
+    chords: [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]],
+    play(bus, t, s, bar, ch, sd) {
+      if (s === 0) ch.forEach(m => bgmTone(bus, t, m + 12, sd * 8 * 1.05, { type: 'triangle', v: 0.05, a: 0.6, r: 0.8, lp: 1800 }));
+      if (s === 0 || s === 4) bgmTone(bus, t, ch[0] - 12, sd * 3, { type: 'sine', v: 0.2, a: 0.02, r: 0.6 });
+      if (s % 2 === 1 && Math.random() < 0.75) bgmTone(bus, t, ch[(s >> 1) % 3] + 12 + (s === 7 ? 12 : 0), 0.7, { type: 'triangle', v: 0.07, a: 0.01, pluck: true, lp: 3200 });
+    }
+  },
+  // 好調: 明るく速いビート
+  bull: {
+    bpm: 120,
+    chords: [[60, 64, 67], [55, 59, 62], [57, 60, 64], [53, 57, 60]],
+    lead: [{ 0: [2, 12], 3: [1, 12], 6: [0, 24] }, { 2: [2, 12], 4: [0, 24], 7: [2, 12] }],
+    play(bus, t, s, bar, ch, sd) {
+      if (s % 2 === 0) bgmDrum(bus, t, 150, 48, 0.2, 0.55);
+      if (s % 2 === 1) bgmHat(bus, t, 0.07, 0.05);
+      if (s === 0) ch.forEach(m => bgmTone(bus, t, m, sd * 8, { type: 'triangle', v: 0.035, a: 0.05, r: 0.2, lp: 2200 }));
+      if ([0, 3, 4, 7].includes(s)) bgmTone(bus, t, ch[0] - 12, sd * 1.6, { type: 'triangle', v: 0.2, a: 0.01, pluck: true, lp: 700 });
+      const arp = [0, 1, 2, 1, 0, 2, 1, 2][s];
+      bgmTone(bus, t, ch[arp] + 12, 0.28, { type: 'sawtooth', v: 0.035, a: 0.005, pluck: true, lp: 2600 });
+      const ld = this.lead[bar % 2][s];
+      if (ld) bgmTone(bus, t, ch[ld[0]] + ld[1], sd * 1.8, { type: 'square', v: 0.035, a: 0.01, pluck: true, lp: 3500 });
+    }
+  },
+  // 危機: 低いドローンと鼓動、不協和なベル
+  crisis: {
+    bpm: 64,
+    chords: [[45, 57, 60, 64], [46, 58, 62, 65], [45, 57, 60, 64], [40, 56, 59, 64]],
+    play(bus, t, s, bar, ch, sd) {
+      if (s === 0) {
+        ch.forEach(m => [-9, 9].forEach(d => bgmTone(bus, t, m, sd * 8 * 1.05, { type: 'sawtooth', v: 0.022, a: 1.4, r: 1.4, det: d, lp: 420 })));
+        bgmTone(bus, t, 33, sd * 8 * 1.05, { type: 'sine', v: 0.24, a: 0.8, r: 1.0 });
+      }
+      if (s === 0 || s === 4) {
+        bgmDrum(bus, t, 95, 36, 0.32, 0.7);
+        bgmDrum(bus, t + 0.3, 80, 34, 0.3, 0.45);
+      }
+      if ((s === 2 || s === 6) && Math.random() < 0.55) {
+        const m = [76, 70, 82, 64][Math.floor(Math.random() * 4)];
+        bgmTone(bus, t, m, 3.2, { type: 'sine', v: 0.05, a: 0.01, pluck: true });
+        bgmTone(bus, t, m + 7.2, 2.2, { type: 'sine', v: 0.02, a: 0.01, pluck: true });
+      }
+    }
+  }
+};
+
+function bgmBuild() {
+  if (BGM.master || !audioCtx) return;
+  const c = audioCtx;
+  BGM.master = c.createGain();
+  BGM.master.gain.value = 0;
+  BGM.master.connect(c.destination);
+  BGM.noise = c.createBuffer(1, c.sampleRate, c.sampleRate);
+  const d = BGM.noise.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  Object.keys(BGM_MOODS).forEach(k => {
+    const g = c.createGain();
+    g.gain.value = 0;
+    g.connect(BGM.master);
+    BGM.buses[k] = g;
+    BGM.voices[k] = { on: false, next: 0, step: 0 };
+  });
+}
+
+function bgmFade(mood, sec) {
+  const now = audioCtx.currentTime;
+  Object.keys(BGM.buses).forEach(k => {
+    const g = BGM.buses[k].gain;
+    g.cancelScheduledValues(now);
+    g.setValueAtTime(g.value, now);
+    g.linearRampToValueAtTime(k === mood ? BGM_LEVEL[k] : 0, now + sec);
+  });
+}
+function bgmSetMood(m) {
+  if (!audioCtx || m === BGM.mood) return;
+  BGM.prev = BGM.mood;
+  BGM.mood = m;
+  BGM.since = (typeof state !== 'undefined' && state.ticks) || 0;
+  BGM.fadeUntil = audioCtx.currentTime + 4.5;
+  bgmFade(m, 3.5);
+}
+
+function bgmPump() {
+  if (!audioCtx || !BGM.master) return;
+  const now = audioCtx.currentTime;
+  const target = (BGM.active && BGM.on) ? (PAUSED ? 0.12 : 0.5) : 0;
+  BGM.master.gain.setTargetAtTime(target, now, 0.35);
+  if (!BGM.active || !BGM.on) { Object.values(BGM.voices).forEach(v => { v.on = false; }); return; }
+  Object.keys(BGM_MOODS).forEach(k => {
+    const v = BGM.voices[k], M = BGM_MOODS[k];
+    const act = k === BGM.mood || (k === BGM.prev && now < BGM.fadeUntil);
+    if (!act) { v.on = false; return; }
+    if (!v.on) { v.on = true; v.next = now + 0.08; v.step = 0; }
+    const sd = 60 / M.bpm / 2;
+    while (v.next < now + BGM_AHEAD) {
+      const s = v.step % 8, bar = Math.floor(v.step / 8);
+      try { M.play(BGM.buses[k], v.next, s, bar, M.chords[bar % M.chords.length], sd); } catch (e) {}
+      v.next += sd; v.step++;
+    }
+  });
+}
+
+function bgmStart() {
+  ensureAudio();
+  if (!audioCtx) return;
+  bgmBuild();
+  BGM.ddS = 0; BGM.pnlS = 0;
+  BGM.mood = 'calm'; BGM.prev = null; BGM.since = 0; BGM.fadeUntil = 0;
+  Object.keys(BGM.buses).forEach(k => { const g = BGM.buses[k].gain; g.cancelScheduledValues(0); g.value = k === 'calm' ? 1 : 0; });
+  Object.values(BGM.voices).forEach(v => { v.on = false; });
+  BGM.active = true;
+  if (!BGM.timer) BGM.timer = setInterval(bgmPump, 100);
+  bgmPump();
+}
+function bgmStop() { BGM.active = false; bgmPump(); }
+function toggleBgm() {
+  BGM.on = !BGM.on;
+  try { localStorage.setItem('st_bgm', BGM.on ? '1' : '0'); } catch (e) {}
+  bgmSyncBtn();
+  if (BGM.on && state.running) bgmStart();
+}
+function bgmSyncBtn() {
+  const b = document.getElementById('btn-bgm');
+  if (b) b.style.opacity = BGM.on ? '1' : '0.4';
+}
+
+// ムード判定: 市場の下落(ドローダウン)を最優先、次に運用損益。ヒステリシス＋最低滞在つき
+function bgmJudge(dd, pnl) {
+  BGM.ddS += (dd - BGM.ddS) * 0.08;
+  BGM.pnlS += (pnl - BGM.pnlS) * 0.04;
+  const dw = ((typeof state !== 'undefined' && state.ticks) || 0) - BGM.since;
+  const ok = dw >= BGM_MIN_DWELL, d = BGM.ddS, p = BGM.pnlS;
+  let next = BGM.mood;
+  if (BGM.mood === 'crisis') {
+    if (ok && d >= -0.06) next = (p >= 0.10 && d >= -0.05) ? 'bull' : 'calm';
+  } else if (d <= -0.12 && (ok || d <= -0.18)) next = 'crisis';
+  else if (BGM.mood === 'calm') { if (ok && p >= 0.10 && d >= -0.05) next = 'bull'; }
+  else if (BGM.mood === 'bull') { if (ok && (p < 0.04 || d < -0.05)) next = 'calm'; }
+  return next;
+}
+function bgmTick() {
+  if (!BGM.active || !audioCtx) return;
+  const ddOf = (s) => { const h = s.history.slice(-VIEW_TICKS); return s.price / Math.max(...h) - 1; };
+  const dd = (ddOf(idxOf('jpIndex')) + ddOf(idxOf('usIndex'))) / 2;
+  const total = state.cash + state.sectors.reduce((a, s) => a + s.shares * s.price, 0);
+  const pnl = (total - state.contrib) / Math.max(1, state.contrib);
+  bgmSetMood(bgmJudge(dd, pnl));
+}
+
 const SECTOR_COLORS = ['#00e5ff', '#ffab00', '#ff4081', '#00e676', '#b388ff', '#ff8a65', '#64ffda', '#ffd740', '#82b1ff', '#f48fb1', '#9ccc65', '#40c4ff', '#ffcc80'];
 const SECTOR_ICONS = [
   '<rect x="20" y="20" width="24" height="24" rx="3"/><rect x="27" y="27" width="10" height="10"/><path d="M26 20v-9M32 20v-9M38 20v-9M26 44v9M32 44v9M38 44v9M20 26h-9M20 32h-9M20 38h-9M44 26h9M44 32h9M44 38h9"/>',
@@ -890,13 +1124,30 @@ function fmtAxis(v) {
   return d >= 1e6 ? `${sym}${(d / 1e6).toFixed(1)}M` : (d >= 1000 ? `${sym}${Math.round(d / 1000)}k` : `${sym}${Math.round(d)}`);
 }
 
+// ステージの拡大率。キャンバスは拡大率×画面密度で描画して、大きい画面でもぼやけないようにする
+let STAGE_K = 1;
+function fitStage() {
+  const st = document.getElementById('stage');
+  if (!st) return;
+  STAGE_K = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  st.style.transform = `scale(${STAGE_K})`;
+  st.style.left = `${(window.innerWidth - 1280 * STAGE_K) / 2}px`;
+  st.style.top = `${(window.innerHeight - 720 * STAGE_K) / 2}px`;
+}
+function fitCanvas(canvas) {
+  const p = canvas.parentElement;
+  const w = p.clientWidth, h = p.clientHeight;
+  const S = Math.max(1, STAGE_K * (window.devicePixelRatio || 1));
+  canvas.width = Math.max(1, Math.round(w * S));
+  canvas.height = Math.max(1, Math.round(h * S));
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(canvas.width / w, 0, 0, canvas.height / h, 0, 0);
+  return { ctx, w, h };
+}
+
 function drawAssetChart() {
   const canvas = document.getElementById('assetCanvas');
-  const rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width = rect.width;
-  canvas.height = rect.height;
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width, h = canvas.height;
+  const { ctx, w, h } = fitCanvas(canvas);
   ctx.fillStyle = '#0d1117';
   ctx.fillRect(0, 0, w, h);
 
@@ -1454,6 +1705,7 @@ function stepTick() {
   updateIndexes();
 
   recordSnapshot();
+  bgmTick();
   updateCountdownPill();
   updateUI();
   drawCanvas();
@@ -1620,12 +1872,7 @@ function updateUI() {
 
 function drawCanvas() {
   const canvas = document.getElementById('marketCanvas');
-  const rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width = rect.width;
-  canvas.height = rect.height;
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width;
-  const h = canvas.height;
+  const { ctx, w, h } = fitCanvas(canvas);
 
   ctx.fillStyle = '#0d1117';
   ctx.fillRect(0, 0, w, h);
@@ -1645,7 +1892,7 @@ function drawCanvas() {
 }
 
 function drawChartSlot(ctx, sec, ox, oy, w, h) {
-  const padT = 40, padB = 14, padL = 12, padR = 58;
+  const padT = 40, padB = 14, padL = 12, padR = 92;
   const cw = w - padL - padR;
   const ch = h - padT - padB;
   const volH = Math.max(28, Math.round(ch * 0.22));
@@ -1656,14 +1903,15 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
   const n = Math.min(VIEW_TICKS, H.length);
   const off = H.length - n;
   const hs = H.slice(off), fs = FH.slice(off), vs = VH.slice(off);
-  const ma = hs.map((_, j) => {
+  const maOf = (len) => hs.map((_, j) => {
     let sum = 0, c = 0;
-    for (let k = Math.max(0, off + j - MA_LONG + 1); k <= off + j; k++) { sum += H[k]; c++; }
+    for (let k = Math.max(0, off + j - len + 1); k <= off + j; k++) { sum += H[k]; c++; }
     return sum / c;
   });
+  const ma = maOf(MA_LONG), ma25 = maOf(MA_SHORT);
 
   const extraVals = sec.shares > 0 ? [sec.avgCost] : [];
-  const allVals = hs.concat(fs, ma, extraVals);
+  const allVals = hs.concat(LINES.fair ? fs : [], LINES.ma200 ? ma : [], LINES.ma25 ? ma25 : [], extraVals);
   const minV = Math.min(...allVals) * 0.94;
   const maxV = Math.max(...allVals) * 1.06;
   const range = Math.max(1, maxV - minV);
@@ -1686,7 +1934,7 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
     ctx.fillText(axisPx(val), ox + padL + cw + 6, y + 4);
   }
 
-  for (let i = 0; i < n - 1; i++) {
+  if (LINES.fair) for (let i = 0; i < n - 1; i++) {
     const diff = (hs[i] - fs[i]) + (hs[i + 1] - fs[i + 1]);
     ctx.fillStyle = diff < 0 ? 'rgba(0, 230, 118, 0.17)' : 'rgba(255, 61, 87, 0.17)';
     ctx.beginPath();
@@ -1698,31 +1946,46 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
     ctx.fill();
   }
 
-  ctx.strokeStyle = '#ffab00';
-  ctx.setLineDash([4, 4]);
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  polyline(fs);
-  ctx.stroke();
-  ctx.setLineDash([]);
+  if (LINES.fair) {
+    ctx.strokeStyle = '#ffab00';
+    ctx.setLineDash([4, 4]);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    polyline(fs);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  if (LINES.ma200) {
+    ctx.strokeStyle = '#b388ff';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    polyline(ma);
+    ctx.stroke();
+  }
+  if (LINES.ma25) {
+    ctx.strokeStyle = '#4fc3f7';
+    ctx.lineWidth = 1.3;
+    ctx.beginPath();
+    polyline(ma25);
+    ctx.stroke();
+  }
 
-  ctx.strokeStyle = '#b388ff';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  polyline(ma);
-  ctx.stroke();
-
-  const fairNow = fs[n - 1], maNow = ma[n - 1];
-  const fairY = toY(fairNow), maY = toY(maNow);
+  const fairNow = fs[n - 1], maNow = ma[n - 1], ma25Now = ma25[n - 1];
   const lo = oy + padT + 10, hi = oy + padT + chP - 2;
-  const clampY = (y) => Math.max(lo, Math.min(hi, y));
+  const endLabels = [];
+  if (LINES.fair) endLabels.push({ y: toY(fairNow), text: t('ls_fair'), color: '#ffd54f' });
+  if (LINES.ma200) endLabels.push({ y: toY(maNow), text: t('ls_ma200'), color: '#c9b3ff' });
+  if (LINES.ma25) endLabels.push({ y: toY(ma25Now), text: t('ls_ma25'), color: '#81d4fa' });
+  endLabels.forEach(o => { o.ly = o.y + 4; });
+  endLabels.sort((a, b) => a.ly - b.ly);
+  endLabels.forEach((o, i) => { o.ly = Math.max(lo, o.ly); if (i > 0) o.ly = Math.max(o.ly, endLabels[i - 1].ly + 12); });
+  for (let i = endLabels.length - 1; i >= 0; i--) {
+    const cap = i === endLabels.length - 1 ? hi : endLabels[i + 1].ly - 12;
+    if (endLabels[i].ly > cap) endLabels[i].ly = cap;
+  }
   ctx.font = 'bold 10px monospace';
-  ctx.textAlign = 'right';
-  ctx.fillStyle = '#ffd54f';
-  ctx.fillText(t('ch_fair', { v: fmtPx(fairNow) }), ox + padL + cw - 4, clampY(fairY <= maY ? fairY - 4 : fairY + 12));
-  ctx.fillStyle = '#c9b3ff';
-  ctx.fillText(t('ch_ma', { v: fmtPx(maNow) }), ox + padL + cw - 4, clampY(maY < fairY ? maY - 4 : maY + 12));
   ctx.textAlign = 'left';
+  endLabels.forEach(o => { ctx.fillStyle = o.color; ctx.fillText(o.text, ox + padL + cw + 52, o.ly); });
 
   if (sec.shares > 0) {
     const avgY = toY(sec.avgCost);
@@ -1773,16 +2036,22 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
   ctx.font = 'bold 11px monospace';
   ctx.fillText(`×${volRatio.toFixed(1)}`, ox + padL + cw + 6, vTop + 24);
 
-  const gap = (sec.price / fairNow - 1) * 100;
-  const ratio = sec.price / fairNow;
-  const verdict = ratio <= 0.82 ? t('v_cheap') : (ratio >= 1.3 ? t('v_hot') : t('v_fair'));
-  ctx.fillStyle = gap <= -3 ? '#69f0ae' : (gap >= 3 ? '#ff8a9b' : '#e2e8f0');
-  ctx.font = 'bold 12px monospace';
-  ctx.fillText(t('ch_gap', { g: `${gap >= 0 ? '+' : ''}${gap.toFixed(1)}`, verdict }), ox + padL + 4, oy + 22);
-  const maGap = (sec.price / maNow - 1) * 100;
-  ctx.fillStyle = '#c9b3ff';
-  ctx.font = '11px monospace';
-  ctx.fillText(t('ch_ma_gap', { g: `${maGap >= 0 ? '+' : ''}${maGap.toFixed(1)}`, dir: maGap >= 0 ? t('ch_up') : t('ch_down') }), ox + padL + 4, oy + 36);
+  let rowY = oy + 22;
+  if (LINES.fair) {
+    const gap = (sec.price / fairNow - 1) * 100;
+    const ratio = sec.price / fairNow;
+    const verdict = ratio <= 0.82 ? t('v_cheap') : (ratio >= 1.3 ? t('v_hot') : t('v_fair'));
+    ctx.fillStyle = gap <= -3 ? '#69f0ae' : (gap >= 3 ? '#ff8a9b' : '#e2e8f0');
+    ctx.font = 'bold 12px monospace';
+    ctx.fillText(t('ch_gap', { g: `${gap >= 0 ? '+' : ''}${gap.toFixed(1)}`, verdict }), ox + padL + 4, rowY);
+    rowY += 14;
+  }
+  if (LINES.ma200) {
+    const maGap = (sec.price / maNow - 1) * 100;
+    ctx.fillStyle = '#c9b3ff';
+    ctx.font = '11px monospace';
+    ctx.fillText(t('ch_ma_gap', { g: `${maGap >= 0 ? '+' : ''}${maGap.toFixed(1)}`, dir: maGap >= 0 ? t('ch_up') : t('ch_down') }), ox + padL + 4, rowY);
+  }
 
   ctx.fillStyle = '#e2e8f0';
   ctx.font = 'bold 13px monospace';
@@ -1808,6 +2077,7 @@ function resultComment(total, jpV, usV, forced) {
 
 function endGame(bankrupt) {
   state.running = false;
+  bgmStop();
   const stockVal = state.sectors.reduce((acc, s) => acc + s.shares * s.price, 0);
   const total = Math.round(state.cash + stockVal);
   const contrib = Math.round(state.contrib);
@@ -1846,6 +2116,7 @@ let PAUSED = false;
 let lastResult = { title: '', html: '' };
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+const LINES = (() => { let o = {}; try { o = JSON.parse(lsGet('st_lines2') || '{}') || {}; } catch (e) {} return { fair: o.fair !== false, ma25: o.ma25 !== false, ma200: o.ma200 !== false }; })();
 function currentSettings() { return { lang: LANG, cur: HOME, diff: DIFF }; }
 function saveSettings() {
   lsSet('st_settings', JSON.stringify(currentSettings()));
@@ -1956,6 +2227,7 @@ function applyPendingAndRestart() {
     else { document.getElementById('overlay').style.display = 'none'; modalMode = 'running'; }
     return;
   }
+  bgmStop();
   applySettings(s);
   renderModal('start');
 }
@@ -2012,16 +2284,25 @@ document.getElementById('btn-start').onclick = () => {
   document.getElementById('overlay').style.display = 'none';
   modalMode = 'running';
   state.running = true;
+  bgmStart();
 };
 document.getElementById('btn-cancel').onclick = () => { if (modalMode === 'result') openSettings(); else if (modalMode === 'settings') closeSettings(); };
 document.getElementById('btn-settings').onclick = openSettings;
 document.querySelectorAll('[data-set]').forEach(el => { el.onclick = () => pickSetting(el.getAttribute('data-set'), el.getAttribute('data-val')); });
 document.getElementById('btn-mute').onclick = toggleMute;
+document.getElementById('btn-bgm').onclick = toggleBgm;
+bgmSyncBtn();
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && modalMode === 'settings') { closeSettings(); return; }
   if ((e.key === 'm' || e.key === 'M') && !e.repeat) toggleMute();
 });
-window.addEventListener('resize', drawCanvas);
+function refreshLineToggles() { document.querySelectorAll('[data-line]').forEach(el => el.classList.toggle('on', !!LINES[el.getAttribute('data-line')])); }
+document.querySelectorAll('[data-line]').forEach(el => {
+  el.onclick = () => { const k = el.getAttribute('data-line'); LINES[k] = !LINES[k]; lsSet('st_lines2', JSON.stringify(LINES)); refreshLineToggles(); drawCanvas(); };
+});
+refreshLineToggles();
+window.addEventListener('resize', () => { fitStage(); drawCanvas(); drawAssetChart(); });
+fitStage();
 applySettings(loadInitialSettings());
 renderModal('start');
 setInterval(stepTick, TICK_MS);
