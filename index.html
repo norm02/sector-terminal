@@ -450,24 +450,6 @@
   .sub-btn { background: var(--panel-alt); border: 1px solid var(--border); color: var(--text); font-family: var(--font); font-size: 13px; padding: 9px 16px; cursor: pointer; }
   .sub-btn:hover { border-color: var(--muted); }
   .start-btn.small { padding: 8px 20px; font-size: 14px; }
-  .slides-overlay { position: fixed; inset: 0; background: rgba(10, 13, 18, 0.94); display: flex; align-items: center; justify-content: center; z-index: 150; }
-  .slide-card { background: var(--panel); border: 2px solid var(--cyan); width: min(780px, 94vw); max-height: 96vh; overflow-y: auto; padding: 16px 24px 18px; }
-  .slide-step { font-size: 20px; font-weight: bold; color: #f1f5f9; letter-spacing: 0.06em; }
-  .slide-step b { font-size: 30px; color: var(--cyan); }
-  .sub-btn.skip { border-color: var(--cyan); color: var(--cyan); font-weight: bold; padding: 8px 18px; }
-  .sub-btn.skip:hover { background: #172638; }
-  .slide-nav .sub-btn { font-weight: bold; color: #f1f5f9; }
-  .slide-fig { display: flex; flex-direction: column; gap: 10px; }
-  .fig-block { border: 1px solid var(--border); background: #0d1117; padding: 6px; }
-  .tile { font-weight: bold; color: #f1f5f9; }
-  .slide-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-  .slide-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; }
-  .dots i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #263042; margin: 0 4px; }
-  .dots i.on { background: var(--cyan); }
-  .tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-  .tile { background: var(--panel-alt); border: 1px solid var(--border); padding: 6px 4px; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
-  .tile.wide { grid-column: span 3; flex-direction: row; justify-content: center; gap: 8px; padding: 8px; }
-  .tile-ico { font-size: 18px; }
   .start-btn {
     background: var(--cyan);
     color: #000;
@@ -493,7 +475,6 @@
     <div class="stat-item tip-down" data-i18n-tip="tip_fx" data-tip="1ドルが何円か。数字が大きいほど円安。米国のETFは円建てなので、円安で有利・円高で不利になります"><span class="label">USD/JPY</span><span id="ui-fx" class="stat-val flow">150.0</span></div>
   </div>
   <div class="top-right">
-    <button id="btn-help" class="mute-btn" data-i18n-title="tip_help" title="遊び方を見る">？</button>
     <button id="btn-settings" class="mute-btn" data-i18n-title="tip_settings" title="設定">⚙</button>
     <button id="btn-mute" class="mute-btn" data-i18n-title="mute_title" title="効果音 ON/OFF（Mキー）">🔊</button>
     <div id="countdown-pill" class="countdown-pill" style="display:none;"></div>
@@ -578,16 +559,10 @@
       <div id="diff-desc" class="diff-desc"></div>
     </div>
     <p id="modal-desc" style="display:none"></p>
-    <div class="btn-row"><button id="btn-howto" class="sub-btn">遊び方</button><button id="btn-cancel" class="sub-btn" style="display:none">キャンセル</button><button id="btn-start" class="start-btn">MARKET OPEN (START)</button></div>
+    <div class="btn-row"><button id="btn-cancel" class="sub-btn" style="display:none">キャンセル</button><button id="btn-start" class="start-btn">MARKET OPEN (START)</button></div>
   </div>
 </div>
 
-<div id="slides" class="slides-overlay" style="display:none">
-  <div class="slide-card">
-    <div class="slide-top"><span id="slide-step" class="slide-step"></span><button id="slide-skip" class="sub-btn skip">スキップ</button></div>
-    <div id="slide-fig" class="slide-fig"></div>
-    <div id="slide-nav" class="slide-nav"><button id="slide-prev" class="sub-btn"></button><span id="slide-dots" class="dots"></span><button id="slide-next" class="start-btn small"></button></div>
-  </div>
 </div>
 
 <script>
@@ -660,8 +635,8 @@ const I18N = {
     diff_desc_hard: 'ハード：値動きが荒く、物価高で生活費が上がりやすい。大きな下落が来やすく、ニュースはすぐ織り込まれる。',
     tagline: '',
     set_lang: '言語', set_cur: '通貨', set_diff: '難易度', cur_jpy: '円 (¥)', cur_usd: 'ドル ($)',
-    btn_howto: '遊び方', btn_settings: '⚙ 設定', settings_title: '設定', settings_note: '設定を変えると、ゲームは最初からやり直しになります。',
-    btn_apply: '適用してやり直す', btn_cancel: 'キャンセル', tip_help: '遊び方を見る', tip_settings: '設定（変更するとやり直し）',
+    btn_settings: '⚙ 設定', settings_title: '設定', settings_note: '設定を変えると、ゲームは最初からやり直しになります。',
+    btn_apply: '適用してやり直す', btn_cancel: 'キャンセル', tip_settings: '設定（変更するとやり直し）',
     tip_fx_JPY: '1ドルが何円か。数字が大きいほど円安。米国のETFは円建てなので、円安で有利・円高で不利になります',
     tip_fx_USD: '1ドルが何円か。数字が大きいほど円安。日本総合ETFは円建てなので、円安だとドルでの価値が下がります',
     sens_us_JPY: ' — {desc}（追い風: 好景気・円安 ／ 逆風: 不景気・円高）', sens_us_USD: ' — {desc}（追い風: 好景気 ／ 逆風: 不景気）',
@@ -669,11 +644,8 @@ const I18N = {
     desc_us_USD: '米国の11業種をまとめた総合ETF（S&P500風。情報技術が約3割）。ドル建てなので為替の影響なし',
     desc_jp_JPY: '日本株全体の動き（日経平均風）。米国株とは別の動きをする時期もある',
     desc_jp_USD: '日本株全体の動き（日経平均風）。円建てなので、円安だとドルでの価値が下がる',
-    sl_next: '次へ', sl_prev: '戻る', sl_skip: 'スキップ', sl_done: 'はじめる',
-    fig1_you: 'あなた', fig1_dca: '積立', fig1_y0: 'スタート', fig1_y10: '10年後',
     fig3_price: '株価', fig3_fair: '理論株価', fig3_ma: '200日線', fig3_vol: '出来高', fig3_cheap: 'お得', fig3_exp: '割高',
     fig4_salary: '給与 {v}', fig4_living: '生活費', fig4_forced: '強制売却', fig4_y: '{n}年',
-    fig1_head: '積立に勝て', fig_home: 'あなたの通貨', fig_fx: '為替の影響あり', fig_nofx: '影響なし', fig_weak: '円安', fig_strong: '円高', fig_us: '米国ETF', fig_jp: '日本総合'
   },
   en: {
     lbl_total: 'Net worth', lbl_cash: 'Cash', lbl_elapsed: 'Elapsed', lbl_pnl: 'Gain/Loss', lbl_flow: 'Monthly investable',
@@ -722,8 +694,8 @@ const I18N = {
     diff_desc_hard: 'Hard: wilder price swings, living costs that rise faster with inflation, more frequent crashes, and news that is priced in quickly.',
     tagline: '',
     set_lang: 'Language', set_cur: 'Currency', set_diff: 'Difficulty', cur_jpy: 'Yen (¥)', cur_usd: 'US Dollar ($)',
-    btn_howto: 'How to play', btn_settings: '⚙ Settings', settings_title: 'Settings', settings_note: 'Changing settings restarts the game from the beginning.',
-    btn_apply: 'Apply & restart', btn_cancel: 'Cancel', tip_help: 'How to play', tip_settings: 'Settings (changing them restarts the game)',
+    btn_settings: '⚙ Settings', settings_title: 'Settings', settings_note: 'Changing settings restarts the game from the beginning.',
+    btn_apply: 'Apply & restart', btn_cancel: 'Cancel', tip_settings: 'Settings (changing them restarts the game)',
     tip_fx_JPY: 'Yen per dollar. A higher number means a weaker yen. US ETFs are priced in yen here, so a weaker yen helps them and a stronger yen hurts.',
     tip_fx_USD: 'Yen per dollar. A higher number means a weaker yen. The Japan Total ETF is yen-based, so a weaker yen lowers its dollar value.',
     sens_us_JPY: ' — {desc} (Tailwinds: Boom, weak yen / Headwinds: Recession, strong yen)', sens_us_USD: ' — {desc} (Tailwinds: Boom / Headwinds: Recession)',
@@ -731,11 +703,8 @@ const I18N = {
     desc_us_USD: 'A total-market ETF blending the 11 US sectors (S&P 500-like; Technology is about 30%). Priced in dollars, so there is no FX effect for you.',
     desc_jp_JPY: 'Tracks the Japanese stock market (Nikkei-style). It sometimes moves differently from US stocks.',
     desc_jp_USD: 'Tracks the Japanese stock market (Nikkei-style). It is priced in yen, so a weaker yen lowers its dollar value. It sometimes moves differently from US stocks.',
-    sl_next: 'Next', sl_prev: 'Back', sl_skip: 'Skip', sl_done: 'Let’s go',
-    fig1_you: 'You', fig1_dca: 'DCA', fig1_y0: 'Start', fig1_y10: 'Year 10',
     fig3_price: 'Price', fig3_fair: 'Fair value', fig3_ma: '200-day MA', fig3_vol: 'Volume', fig3_cheap: 'Cheap', fig3_exp: 'Expensive',
     fig4_salary: 'Salary {v}', fig4_living: 'Living cost', fig4_forced: 'Forced sale', fig4_y: 'Y{n}',
-    fig1_head: 'Beat DCA', fig_home: 'Your currency', fig_fx: 'FX effect', fig_nofx: 'No FX effect', fig_weak: 'Weak ¥', fig_strong: 'Strong ¥', fig_us: 'US ETFs', fig_jp: 'Japan Total'
   }
 };
 
@@ -1943,7 +1912,6 @@ function renderModal(mode) {
   const $ = (id) => document.getElementById(id);
   const isRes = mode === 'result', isSet = mode === 'settings';
   $('settings-box').style.display = isRes ? 'none' : 'block';
-  $('btn-howto').style.display = mode === 'start' ? 'inline-block' : 'none';
   $('btn-cancel').style.display = (isRes || isSet) ? 'inline-block' : 'none';
   if (isRes) {
     $('modal-title').textContent = lastResult.title;
@@ -1957,14 +1925,13 @@ function renderModal(mode) {
   } else {
     $('modal-title').textContent = 'SECTOR TERMINAL';
     $('btn-start').textContent = t('start');
-    $('btn-howto').textContent = t('btn_howto');
   }
   refreshSettingsUI();
   $('overlay').style.display = 'flex';
 }
 function showStartScreen() { renderModal('start'); }
 function openSettings() {
-  if (modalMode === 'settings' || slidesOpen) return;
+  if (modalMode === 'settings') return;
   prevModal = (document.getElementById('overlay').style.display === 'flex' && modalMode === 'result') ? 'result' : 'running';
   pending = currentSettings();
   PAUSED = true;
@@ -2004,108 +1971,6 @@ function loadInitialSettings() {
   return { lang, cur, diff };
 }
 
-let slidesOpen = false, slideIdx = 0;
-const SLIDE_COUNT = 3;
-const SVG_HEAD = 'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 220" style="width:100%;height:auto;max-height:34vh;display:block;font-family:monospace"';
-
-function figGoal() {
-  const you = 'M40 176 L90 160 L140 182 L200 142 L260 154 L320 114 L380 130 L440 94 L500 106 L590 70';
-  const dca = 'M40 176 C160 158 270 132 370 116 S520 92 590 84';
-  return `<svg ${SVG_HEAD}><rect width="640" height="220" fill="#0d1117"/>
-    <text x="320" y="40" fill="#00e5ff" font-size="30" font-weight="bold" text-anchor="middle">${t('fig1_head')}</text>
-    <path d="M40 196H610M40 56V196" stroke="#3b4a63" stroke-width="2" fill="none"/>
-    <path d="${dca}" stroke="#00e5ff" stroke-width="4" fill="none" stroke-dasharray="8 5"/>
-    <path d="${you}" stroke="#00e676" stroke-width="4" fill="none"/>
-    <circle cx="40" cy="176" r="7" fill="#ffd54f"/>
-    <text x="596" y="60" fill="#69f0ae" font-size="17" font-weight="bold" text-anchor="end">${t('fig1_you')}</text>
-    <text x="596" y="112" fill="#00e5ff" font-size="17" font-weight="bold" text-anchor="end">${t('fig1_dca')}</text>
-    <text x="40" y="214" fill="#ffd54f" font-size="15" font-weight="bold">💰 ${fmtYen(INITIAL_CASH)}</text>
-    <text x="320" y="214" fill="#e2e8f0" font-size="15" font-weight="bold" text-anchor="middle">${fmtSigned(SALARY - LIVING_BASE)}${t('per_month')} ↑</text>
-    <text x="610" y="214" fill="#e2e8f0" font-size="15" font-weight="bold" text-anchor="end">🏁 ${t('fig1_y10')}</text></svg>`;
-}
-function figEtfs() {
-  const nm = (id) => activeLang() === 'en' ? EN_INFO[id].name : SECTORS_INIT[id].name;
-  const tile = (id, cls) => `<div class="tile ${cls || ''}"><span class="tile-ico">${SECTORS_INIT[id].emoji}</span><span>${nm(id)}</span></div>`;
-  return `<div class="tiles">${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(id => tile(id)).join('')}${tile(12, 'wide')}${tile(11, 'wide')}</div>`;
-}
-function figChart() {
-  const bars = [[60, 14, 1], [75, 20, 0], [92, 12, 0], [110, 26, 0], [128, 18, 1], [146, 30, 0], [164, 16, 1], [182, 22, 1], [200, 34, 1], [218, 12, 1], [236, 18, 0], [254, 40, 1], [272, 28, 1], [290, 16, 0], [308, 22, 1], [326, 14, 0], [344, 20, 1], [362, 12, 1], [380, 16, 0], [398, 24, 1], [416, 14, 1], [434, 12, 0], [452, 18, 1], [470, 14, 0], [488, 16, 1]];
-  const vol = bars.map(([x, h, up]) => `<rect x="${x}" y="${208 - h}" width="9" height="${h}" fill="${up ? 'rgba(0,230,118,0.7)' : 'rgba(255,61,87,0.7)'}"/>`).join('');
-  return `<svg ${SVG_HEAD}><rect width="640" height="220" fill="#0d1117"/>
-    <path d="M95 112 L120 128 L160 142 L200 134 L228 112 Z" fill="rgba(0,230,118,0.28)"/>
-    <path d="M262 92 L290 88 L330 76 L370 62 L410 72 L448 92 Z" fill="rgba(255,61,87,0.28)"/>
-    <path d="M60 112 L228 112 L228 92 L488 92" stroke="#ffab00" stroke-width="2.5" fill="none" stroke-dasharray="6 4"/>
-    <path d="M60 120 C200 126 340 100 488 84" stroke="#b388ff" stroke-width="2.5" fill="none"/>
-    <path d="M60 104 L95 108 L120 128 L160 142 L200 134 L228 112 L262 92 L290 88 L330 76 L370 62 L410 72 L448 92 L488 80" stroke="#e2e8f0" stroke-width="3.5" fill="none"/>
-    ${vol}<path d="M54 208H500" stroke="#3b4a63"/>
-    <text x="150" y="166" fill="#69f0ae" font-size="16" font-weight="bold" text-anchor="middle">${t('fig3_cheap')}</text>
-    <text x="370" y="50" fill="#ff8a9b" font-size="16" font-weight="bold" text-anchor="middle">${t('fig3_exp')}</text>
-    <g font-size="15" font-weight="bold"><rect x="508" y="36" width="24" height="4" fill="#e2e8f0"/><text x="538" y="42" fill="#e2e8f0">${t('fig3_price')}</text>
-    <rect x="508" y="72" width="24" height="4" fill="#ffab00"/><text x="538" y="78" fill="#ffd54f">${t('fig3_fair')}</text>
-    <rect x="508" y="108" width="24" height="4" fill="#b388ff"/><text x="538" y="114" fill="#d1c4ff">${t('fig3_ma')}</text>
-    <rect x="508" y="140" width="24" height="12" fill="rgba(0,230,118,0.7)"/><text x="538" y="151" fill="#e2e8f0">${t('fig3_vol')}</text></g></svg>`;
-}
-function figMoney() {
-  const lv = [35, 36, 38, 39, 42, 44, 47, 50, 53, 56];
-  const x0 = 50, bw = 38, gap = 18, base = 190, sc = 2.2;
-  const bars = lv.map((v, i) => {
-    const x = x0 + i * (bw + gap), h = v * sc, over = v > 50;
-    return `<rect x="${x}" y="${base - h}" width="${bw}" height="${h}" fill="${over ? 'rgba(255,61,87,0.85)' : 'rgba(255,171,0,0.75)'}"/>
-      <text x="${x + bw / 2}" y="209" fill="#cbd5e1" font-size="13" text-anchor="middle">${t('fig4_y', { n: i + 1 })}</text>`;
-  }).join('');
-  const sy = base - 50 * sc;
-  return `<svg ${SVG_HEAD}><rect width="640" height="220" fill="#0d1117"/>${bars}
-    <path d="M40 ${sy}H620" stroke="#00e676" stroke-width="2.5" stroke-dasharray="6 4"/>
-    <text x="48" y="${sy - 7}" fill="#69f0ae" font-size="15" font-weight="bold">${t('fig4_salary', { v: fmtYen(SALARY) })}</text>
-    <text x="48" y="${base - 35 * sc - 7}" fill="#ffd54f" font-size="14" font-weight="bold">${t('fig4_living')}</text>
-    <rect x="${x0 + 7 * (bw + gap) - 8}" y="10" width="172" height="30" fill="#1e2636" stroke="#ff3d57" stroke-width="2"/>
-    <text x="${x0 + 7 * (bw + gap) + 78}" y="31" fill="#ff8a9b" font-size="16" font-weight="bold" text-anchor="middle">🚨 ${t('fig4_forced')}</text></svg>`;
-}
-function figFx() {
-  const jpy = HOME === 'JPY';
-  const sym = jpy ? '¥' : '$';
-  const card = (x, emoji, label, exposed) => `<rect x="${x}" y="22" width="170" height="116" rx="10" fill="#161d29" stroke="${exposed ? '#ffab00' : '#00e676'}" stroke-width="3"/>
-    <text x="${x + 85}" y="74" font-size="38" text-anchor="middle">${emoji}</text>
-    <text x="${x + 85}" y="102" fill="#f1f5f9" font-size="16" font-weight="bold" text-anchor="middle">${label}</text>
-    <text x="${x + 85}" y="126" fill="${exposed ? '#ffd54f' : '#69f0ae'}" font-size="14" font-weight="bold" text-anchor="middle">${exposed ? '⚡ ' + t('fig_fx') : '✓ ' + t('fig_nofx')}</text>`;
-  const wave = (x1) => `<path d="M${x1} 80 q9.25 -22 18.5 0 t18.5 0 t18.5 0 t18.5 0" stroke="#ffab00" stroke-width="3.5" fill="none"/><text x="${x1 + 37}" y="52" fill="#ffd54f" font-size="14" font-weight="bold" text-anchor="middle">USD/JPY</text>`;
-  const line = (x1) => `<path d="M${x1} 80H${x1 + 74}" stroke="#00e676" stroke-width="3.5"/><text x="${x1 + 37}" y="70" fill="#69f0ae" font-size="20" font-weight="bold" text-anchor="middle">✓</text>`;
-  const weakIcon = jpy ? '🗽' : '🗾', weakArrow = jpy ? '<tspan fill="#69f0ae">▲</tspan>' : '<tspan fill="#ff8a9b">▼</tspan>';
-  const strongArrow = jpy ? '<tspan fill="#ff8a9b">▼</tspan>' : '<tspan fill="#69f0ae">▲</tspan>';
-  const pill = (x, label, arrow) => `<rect x="${x}" y="156" width="280" height="50" rx="8" fill="#0d1117" stroke="#3b4a63" stroke-width="2"/>
-    <text x="${x + 140}" y="188" fill="#f1f5f9" font-size="19" font-weight="bold" text-anchor="middle">${label} ▲▼ → ${weakIcon} ${arrow}</text>`;
-  return `<svg ${SVG_HEAD}><rect width="640" height="220" fill="#0d1117"/>
-    ${card(30, '🗽', t('fig_us'), jpy)}${card(440, '🗾', t('fig_jp'), !jpy)}
-    ${jpy ? wave(200) : line(200)}${jpy ? line(366) : wave(366)}
-    <circle cx="320" cy="80" r="46" fill="#1e2636" stroke="#00e5ff" stroke-width="4"/>
-    <text x="320" y="98" fill="#00e5ff" font-size="52" font-weight="bold" text-anchor="middle">${sym}</text>
-    <text x="320" y="144" fill="#cbd5e1" font-size="13" font-weight="bold" text-anchor="middle">${t('fig_home')}</text>
-    ${pill(30, t('fig_weak'), weakArrow).replace('▲▼ →', '▲ →')}${pill(330, t('fig_strong'), strongArrow).replace('▲▼ →', '▼ →')}</svg>`;
-}
-const SLIDE_PAGES = [[figGoal], [figEtfs, figChart], [figMoney, figFx]];
-
-function renderSlide() {
-  const $ = (id) => document.getElementById(id);
-  $('slide-step').innerHTML = `<b>${slideIdx + 1}</b> / ${SLIDE_COUNT}`;
-  $('slide-skip').textContent = t('sl_skip');
-  $('slide-fig').innerHTML = SLIDE_PAGES[slideIdx].map(f => `<div class="fig-block">${f()}</div>`).join('');
-  $('slide-dots').innerHTML = Array.from({ length: SLIDE_COUNT }, (_, i) => `<i class="${i === slideIdx ? 'on' : ''}"></i>`).join('');
-  $('slide-prev').style.visibility = slideIdx === 0 ? 'hidden' : 'visible';
-  $('slide-prev').textContent = '◀ ' + t('sl_prev');
-  $('slide-next').textContent = slideIdx === SLIDE_COUNT - 1 ? t('sl_done') : t('sl_next') + ' ▶';
-}
-function openSlides() {
-  slidesOpen = true; slideIdx = 0; PAUSED = true;
-  document.getElementById('slides').style.display = 'flex';
-  renderSlide();
-}
-function closeSlides() {
-  slidesOpen = false; PAUSED = false;
-  document.getElementById('slides').style.display = 'none';
-  lsSet('st_seen', '1');
-}
-function nextSlide() { if (slideIdx >= SLIDE_COUNT - 1) closeSlides(); else { slideIdx++; renderSlide(); } }
-function prevSlide() { if (slideIdx > 0) { slideIdx--; renderSlide(); } }
 
 const activeSec = () => state.sectors[state.activeId];
 document.getElementById('btn-buy10').onclick = () => buy(buyQtyFor(activeSec(), 0.10));
@@ -2149,19 +2014,10 @@ document.getElementById('btn-start').onclick = () => {
   state.running = true;
 };
 document.getElementById('btn-cancel').onclick = () => { if (modalMode === 'result') openSettings(); else if (modalMode === 'settings') closeSettings(); };
-document.getElementById('btn-howto').onclick = openSlides;
-document.getElementById('btn-help').onclick = openSlides;
 document.getElementById('btn-settings').onclick = openSettings;
 document.querySelectorAll('[data-set]').forEach(el => { el.onclick = () => pickSetting(el.getAttribute('data-set'), el.getAttribute('data-val')); });
-document.getElementById('slide-prev').onclick = prevSlide;
-document.getElementById('slide-next').onclick = nextSlide;
-document.getElementById('slide-skip').onclick = closeSlides;
 document.getElementById('btn-mute').onclick = toggleMute;
 window.addEventListener('keydown', (e) => {
-  if (slidesOpen) {
-    if (e.key === 'ArrowRight') nextSlide(); else if (e.key === 'ArrowLeft') prevSlide(); else if (e.key === 'Escape') closeSlides();
-    return;
-  }
   if (e.key === 'Escape' && modalMode === 'settings') { closeSettings(); return; }
   if ((e.key === 'm' || e.key === 'M') && !e.repeat) toggleMute();
 });
