@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SECTOR TERMINAL // 10Y MARKET SIMULATOR</title>
+<title>SECTOR TERMINAL</title>
 <style>
   :root {
     --bg: #0a0d12;
@@ -90,7 +90,7 @@
     position: absolute;
     z-index: 300;
     width: max-content;
-    max-width: 250px;
+    max-width: 260px;
     background: #1e2636;
     color: var(--text);
     border: 1px solid var(--cyan);
@@ -340,41 +340,21 @@
     padding: 8px 14px;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: flex-start;
+    gap: 4px;
+    min-width: 0;
   }
   .fund-meta {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 2px;
     font-size: 11px;
     color: var(--muted);
     border-bottom: 1px solid var(--border);
     padding-bottom: 4px;
   }
-  .metric-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-  }
-  .metric-name { width: 42px; color: var(--muted); font-weight: bold; }
-  .metric-val { width: 72px; font-weight: bold; font-size: 14px; text-align: right; }
-  .bar-bg {
-    flex: 1;
-    height: 11px;
-    background: #0a0d12;
-    border: 1px solid var(--border);
-    position: relative;
-  }
-  .bar-fill {
-    height: 100%;
-    transition: width 0.25s, background-color 0.25s;
-  }
-  .metric-tag { width: 82px; font-size: 11px; font-weight: bold; text-align: right; }
-
 
   /* ASSET CHART PANEL (bottom-left) */
-  .fund-box { justify-content: flex-start; gap: 4px; min-width: 0; }
-  .fund-meta { flex-direction: column; gap: 2px; }
   .asset-title { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); }
   .asset-title .dash { display: inline-block; width: 14px; border-top: 2px dashed var(--amber); margin-right: 4px; vertical-align: middle; }
   .asset-wrap { flex: 1; min-height: 0; position: relative; overflow: hidden; border: 1px solid var(--border); }
@@ -431,21 +411,9 @@
 
   .cash-row { display: flex; justify-content: flex-end; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); padding: 3px 0; }
   .cash-row .mini-btn { padding: 4px 10px; }
-
-  /* （旧）HEDGE BOX */
-  .hedge-box { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 4px 0; overflow: hidden; }
-  .thermo { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
-  .thermo-bar { flex: 1; height: 8px; position: relative; border-radius: 4px; background: linear-gradient(90deg, #00e5ff 0%, #00e676 42%, #ffab00 68%, #ff3d57 100%); }
-  .thermo-mark { position: absolute; top: -3px; width: 3px; height: 14px; background: #fff; border-radius: 1px; left: 50%; transition: left 0.25s; }
-  .thermo-text { min-width: 92px; text-align: right; color: var(--text); font-weight: bold; }
-  .hedge-info { font-size: 11px; color: var(--muted); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .hedge-info b { color: var(--text); }
-  .hedge-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
   .mini-btn { background: var(--panel-alt); border: 1px solid var(--border); color: var(--text); font-family: var(--font); font-size: 11px; font-weight: bold; padding: 4px 2px; cursor: pointer; white-space: nowrap; }
   .mini-btn:hover:not(:disabled) { background: #202a3c; }
   .mini-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-  .mini-btn.buy-btn { color: var(--green); }
-  .mini-btn.sell-btn { color: var(--red); }
   .mini-btn.cash-btn { border-color: rgba(255, 171, 0, 0.6); color: var(--amber); }
 
   /* OVERLAY MODAL */
@@ -472,12 +440,11 @@
   .modal p { font-size: 12.5px; line-height: 1.7; color: var(--text); margin-bottom: 16px; text-align: left; }
   .lang-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; }
   .lang-btn { background: var(--panel-alt); color: var(--text); border: 1px solid var(--border); font-family: var(--font); font-size: 13px; padding: 5px 18px; cursor: pointer; }
-  .diff-label { font-size: 12px; color: var(--muted); align-self: center; margin-right: 4px; }
-  .diff-desc { font-size: 11px; color: var(--muted); line-height: 1.6; margin: -4px 0 10px; text-align: center; min-height: 36px; }
+  .diff-desc { font-size: 11px; color: var(--muted); line-height: 1.6; margin: 4px 0 14px; text-align: center; min-height: 36px; }
   .lang-btn:hover { border-color: var(--muted); }
   .lang-btn.on { border-color: var(--cyan); color: var(--cyan); font-weight: bold; }
   .set-row { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 8px; }
-  .set-label { width: 64px; font-size: 12px; color: var(--muted); text-align: right; }
+  .set-label { width: 88px; font-size: 12px; color: var(--muted); text-align: right; }
   .seg { display: flex; gap: 6px; }
   .btn-row { display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; }
   .sub-btn { background: var(--panel-alt); border: 1px solid var(--border); color: var(--text); font-family: var(--font); font-size: 13px; padding: 9px 16px; cursor: pointer; }
@@ -521,9 +488,9 @@
     <div class="stat-item"><span class="label" data-i18n="lbl_total">総資産</span><span id="ui-total" class="stat-val">100,000円</span></div>
     <div class="stat-item"><span class="label" data-i18n="lbl_cash">現金</span><span id="ui-cash" class="stat-val cash">100,000円</span></div>
     <div class="stat-item"><span class="label" data-i18n="lbl_elapsed">経過</span><span id="ui-time" class="stat-val time">0Y 00M / 10Y</span></div>
-    <div class="stat-item tip-down" data-i18n-tip="tip_pnl" data-tip="総資産 − 元本。元本は「初期資金＋これまでの月収支の合計」です。プラスなら、運用で増やせています"><span class="label" data-i18n="lbl_pnl">運用損益</span><span id="ui-pnl" class="stat-val">+0円 (+0.0%)</span></div>
-    <div class="stat-item tip-down" data-i18n-tip="tip_flow" data-tip="毎月の給与 − 生活費。物価のニュースで生活費が上がると減ります。現金が足りない月は、保有ETFが自動で売られます"><span class="label" data-i18n="lbl_flow">月収支</span><span id="ui-flow" class="stat-val flow up">+15,000円</span></div>
-    <div class="stat-item tip-down" data-i18n-tip="tip_fx" data-tip="1ドルが何円か。数字が大きいほど円安。米国総合ETFは円安で有利・円高で不利になります"><span class="label">USD/JPY</span><span id="ui-fx" class="stat-val flow">150.0</span></div>
+    <div class="stat-item tip-down" data-i18n-tip="tip_pnl" data-tip="総資産 − 元本。元本は「初期資金＋これまでの投資可能余剰の合計」です。プラスなら、運用で増やせています"><span class="label" data-i18n="lbl_pnl">運用損益</span><span id="ui-pnl" class="stat-val">+0円 (+0.0%)</span></div>
+    <div class="stat-item tip-down" data-i18n-tip="tip_flow" data-tip="毎月の給与 − 生活費（＝毎月投資できるお金）。物価のニュースで生活費が上がると減ります。現金が足りない月は、保有ETFが自動で売られます"><span class="label" data-i18n="lbl_flow">余剰資金/月</span><span id="ui-flow" class="stat-val flow up">+15,000円/月</span></div>
+    <div class="stat-item tip-down" data-i18n-tip="tip_fx" data-tip="1ドルが何円か。数字が大きいほど円安。米国のETFは円建てなので、円安で有利・円高で不利になります"><span class="label">USD/JPY</span><span id="ui-fx" class="stat-val flow">150.0</span></div>
   </div>
   <div class="top-right">
     <button id="btn-help" class="mute-btn" data-i18n-title="tip_help" title="遊び方を見る">？</button>
@@ -551,7 +518,7 @@
 
     <div id="all-sectors">
       <div class="panel-title">
-        <span data-i18n="sec_title">ALL SECTORS (クリックで下段操作へ)</span>
+        <span data-i18n="sec_title">ALL ETF (クリックで下段操作へ)</span>
         <span data-i18n="sec_legend">🔥過熱 / 💎割安 / 📈高ROE</span>
       </div>
       <div id="sector-grid" class="sector-grid"></div>
@@ -603,14 +570,14 @@
 
 <div id="overlay">
   <div class="modal">
-    <h1 id="modal-title">SECTOR TERMINAL // 10Y SIM</h1>
+    <h1 id="modal-title">SECTOR TERMINAL</h1>
     <div id="settings-box">
       <div class="set-row"><span class="set-label" data-i18n="set_lang">言語</span><span class="seg"><button class="lang-btn on" data-set="lang" data-val="ja">日本語</button><button class="lang-btn" data-set="lang" data-val="en">English</button></span></div>
       <div class="set-row"><span class="set-label" data-i18n="set_cur">通貨</span><span class="seg"><button class="lang-btn on" data-set="cur" data-val="JPY" data-i18n="cur_jpy">円 (¥)</button><button class="lang-btn" data-set="cur" data-val="USD" data-i18n="cur_usd">ドル ($)</button></span></div>
       <div class="set-row"><span class="set-label" data-i18n="set_diff">難易度</span><span class="seg"><button class="lang-btn on" data-set="diff" data-val="normal" data-i18n="diff_normal">ノーマル</button><button class="lang-btn" data-set="diff" data-val="hard" data-i18n="diff_hard">ハード</button></span></div>
       <div id="diff-desc" class="diff-desc"></div>
     </div>
-    <p id="modal-desc">10年間で、毎月の積立に勝てるか。</p>
+    <p id="modal-desc" style="display:none"></p>
     <div class="btn-row"><button id="btn-howto" class="sub-btn">遊び方</button><button id="btn-cancel" class="sub-btn" style="display:none">キャンセル</button><button id="btn-start" class="start-btn">MARKET OPEN (START)</button></div>
   </div>
 </div>
@@ -624,10 +591,6 @@
 </div>
 
 <script>
-// 売買できるのは13本：米国の11業種ETF（GICS分類）＋日本総合＋米国総合（11業種の合成）
-//   sector=米国の業種ETF（円建て・為替ヘッジなし）/ usIndex=米国総合（業種の合成）/ jpIndex=日本総合（独立した値動き）
-//   ex=カードに出す短い例、desc=操作中に出す説明、roe=自己資本利益率、mb=市場全体との連動の強さ（1.0=標準）、drift=業績の成長
-//   vol は「業種固有のノイズ」。市場全体の共通変動（MKT_SIGMA）・為替と合わせた年率ボラが目安になるよう calibrate 済み
 const SECTORS_INIT = [
   { id: 0,  code: '01', emoji: '💻', name: '情報技術',       ex: 'ソフト・半導体',     price: 1600, basePer: 28, roe: 0.25, vol: 0.045, mb: 1.20, drift: 0.012, payout: 0.20, fx: true, desc: 'ソフトウェア・半導体・IT機器の会社。成長が速いぶん値動きも大きく、金利上昇に弱い' },
   { id: 1,  code: '02', emoji: '💊', name: 'ヘルスケア',     ex: '医薬品・医療機器',   price: 1200, basePer: 18, roe: 0.20, vol: 0.014, mb: 0.70, drift: 0.007, payout: 0.27, fx: true, desc: '医薬品・医療機器・病院など。景気に左右されにくい守りの業種' },
@@ -644,20 +607,16 @@ const SECTORS_INIT = [
   { id: 12, code: '13', emoji: '🗾', name: '日本総合ETF',    kind: 'jpIndex', ex: '日経平均風',   price: 1000, eps: 1000 / 15, bps: 740, basePer: 15, roe: 0.09, vol: 0.022, mb: 0.80, drift: 0.005, payout: 0.30, desc: '日本株全体の動き（日経平均風）。米国株とは別の動きをする時期もある' }
 ];
 SECTORS_INIT.forEach(x => { if (x.eps === undefined) { x.eps = x.price / x.basePer; x.bps = x.eps / x.roe; } });
-// 米国総合ETFを構成する11業種のウェイト（時価総額の目安、合計1.0）
 const US_WEIGHTS = [0.30, 0.11, 0.13, 0.10, 0.06, 0.08, 0.04, 0.03, 0.03, 0.03, 0.09];
 
-
 let state = {};
-// ---- 言語とホーム通貨 ----
-// 日本語版＝ホーム通貨は円（米国ETFが為替リスクを負う）／英語版＝ホーム通貨はドル（日本総合ETFが為替リスクを負う）
-let LANG = 'ja';     // 'ja' | 'en'
-let HOME = 'JPY';    // 'JPY' | 'USD'
+let LANG = 'ja';
+let HOME = 'JPY';
 const I18N = {
   ja: {
-    lbl_total: '総資産', lbl_cash: '現金', lbl_elapsed: '経過', lbl_pnl: '運用損益', lbl_flow: '月収支',
-    tip_pnl: '総資産 − 元本。元本は「初期資金＋これまでの月収支の合計」です。配当も含みます。プラスなら、運用で増やせています',
-    tip_flow: '毎月の給与 − 生活費。物価のニュースで生活費が上がると減ります。現金が足りない月は、保有ETFが自動で売られます',
+    lbl_total: '総資産', lbl_cash: '現金', lbl_elapsed: '経過', lbl_pnl: '運用損益', lbl_flow: '余剰資金/月',
+    tip_pnl: '総資産 − 元本。元本は「初期資金＋これまでの投資可能余剰の合計」です。配当も含みます。プラスなら、運用で増やせています',
+    tip_flow: '毎月の給与 − 生活費（＝毎月投資できるお金）。物価のニュースで生活費が上がると減ります。現金が足りない月は、保有ETFが自動で売られます',
     tip_fx: '1ドルが何円か。数字が大きいほど円安。米国のETFは円建てなので、円安で有利・円高で不利になります',
     mute_title: '効果音 ON/OFF（Mキー）', news_empty: '— ニュース待機中 —',
     sec_title: 'ALL ETF (クリックで下段操作へ)', sec_legend: '🔥過熱 / 💎割安 / 📈高ROE',
@@ -685,12 +644,12 @@ const I18N = {
     earn_head: '📑 決算発表：', earn_beat: '予想超え→', earn_miss: '予想割れ→', earn_none: '全体に大きなサプライズなし', earn_more: 'ほか{n}',
     tag_beat: '▲好決算', tag_miss: '▼不調',
     forced: '🚨 資金不足：{names} {n}口を強制売却', dividend: '💰 配当を受け取りました +{v}（{n}銘柄）',
-    sens: ' — {desc}（追い風: {up} ／ 逆風: {down}）', sens_none: '特になし', sens_us: ' — {desc}（追い風: 好景気・円安 ／ 逆風: 不景気・円高）',
+    sens: ' — {desc}（追い風: {up} ／ 逆風: {down}）', sens_none: '特になし',
     res_title_ok: '10 YEARS COMPLETE // RESULT', res_title_bk: 'GAME OVER // 破産',
-    r_final: '最終総資産', r_principal: '元本（初期資金＋累計収支）', r_pnl: '運用損益', r_ratio: '（元本比 ×{r}）',
+    r_final: '最終総資産', r_principal: '元本（初期資金＋累計投資余剰）', r_pnl: '運用損益', r_ratio: '（元本比 ×{r}）',
     r_div: '受取配当の合計', r_dca: '積立投資なら（同じ入金を毎月積立・配当は再投資）', jp: '日本総合', us: '米国総合',
     r_crash: '今回の大きな下落', r_crash_val: '{y}年目に{name}', r_crash_none: 'なし',
-    r_flow: '最終の月収支: {flow}/月（生活費 {living}）／ 強制売却 {n}回', r_rank: '評価ランク',
+    r_flow: '最終の投資余剰: {flow}/月（生活費 {living}）／ 強制売却 {n}回', r_rank: '評価ランク',
     r_bankrupt: '生活費を賄えず、保有株をすべて売却しても現金がマイナスになりました。',
     c_big: '積立を大きく引き離しました。相場の波を読み切った10年です。', c_beat: '積立投資を上回りました。ニュースと値動きを味方にできた10年です。',
     c_mid: '{worse}の積立には勝ちましたが、{better}の積立には届きませんでした。', c_even: '積立とほぼ互角でした。売買を重ねても、積立の堅さが際立つ結果です。',
@@ -699,12 +658,27 @@ const I18N = {
     diff_label: '難易度', diff_normal: 'ノーマル', diff_hard: 'ハード',
     diff_desc_normal: 'ノーマル：市場は穏やかで、生活費の上昇も緩やか。大きな下落は少なめ・浅め。ニュースの織り込みが遅く、先回りしやすい。',
     diff_desc_hard: 'ハード：値動きが荒く、物価高で生活費が上がりやすい。大きな下落が来やすく、ニュースはすぐ織り込まれる。',
-    r_vs_dca: '積立（日本・米国の平均）比: ×{r}',
+    tagline: '',
+    set_lang: '言語', set_cur: '通貨', set_diff: '難易度', cur_jpy: '円 (¥)', cur_usd: 'ドル ($)',
+    btn_howto: '遊び方', btn_settings: '⚙ 設定', settings_title: '設定', settings_note: '設定を変えると、ゲームは最初からやり直しになります。',
+    btn_apply: '適用してやり直す', btn_cancel: 'キャンセル', tip_help: '遊び方を見る', tip_settings: '設定（変更するとやり直し）',
+    tip_fx_JPY: '1ドルが何円か。数字が大きいほど円安。米国のETFは円建てなので、円安で有利・円高で不利になります',
+    tip_fx_USD: '1ドルが何円か。数字が大きいほど円安。日本総合ETFは円建てなので、円安だとドルでの価値が下がります',
+    sens_us_JPY: ' — {desc}（追い風: 好景気・円安 ／ 逆風: 不景気・円高）', sens_us_USD: ' — {desc}（追い風: 好景気 ／ 逆風: 不景気）',
+    desc_us_JPY: '米国の11業種をまとめた総合ETF（S&P500風。情報技術が約3割）。円建て・為替ヘッジなし',
+    desc_us_USD: '米国の11業種をまとめた総合ETF（S&P500風。情報技術が約3割）。ドル建てなので為替の影響なし',
+    desc_jp_JPY: '日本株全体の動き（日経平均風）。米国株とは別の動きをする時期もある',
+    desc_jp_USD: '日本株全体の動き（日経平均風）。円建てなので、円安だとドルでの価値が下がる',
+    sl_next: '次へ', sl_prev: '戻る', sl_skip: 'スキップ', sl_done: 'はじめる',
+    fig1_you: 'あなた', fig1_dca: '積立', fig1_y0: 'スタート', fig1_y10: '10年後',
+    fig3_price: '株価', fig3_fair: '理論株価', fig3_ma: '200日線', fig3_vol: '出来高', fig3_cheap: 'お得', fig3_exp: '割高',
+    fig4_salary: '給与 {v}', fig4_living: '生活費', fig4_forced: '強制売却', fig4_y: '{n}年',
+    fig1_head: '積立に勝て', fig_home: 'あなたの通貨', fig_fx: '為替の影響あり', fig_nofx: '影響なし', fig_weak: '円安', fig_strong: '円高', fig_us: '米国ETF', fig_jp: '日本総合'
   },
   en: {
-    lbl_total: 'Net worth', lbl_cash: 'Cash', lbl_elapsed: 'Elapsed', lbl_pnl: 'Gain/Loss', lbl_flow: 'Monthly net',
-    tip_pnl: 'Net worth − principal. Principal = initial cash + the sum of your monthly net. Dividends count. Positive means your investing is adding value.',
-    tip_flow: 'Monthly salary − living costs. Inflation news raises living costs. In months when cash runs short, your holdings are sold automatically.',
+    lbl_total: 'Net worth', lbl_cash: 'Cash', lbl_elapsed: 'Elapsed', lbl_pnl: 'Gain/Loss', lbl_flow: 'Monthly investable',
+    tip_pnl: 'Net worth − principal. Principal = initial cash + cumulative monthly investable cash. Dividends count. Positive means your investing is adding value.',
+    tip_flow: 'Monthly salary − living costs (= cash you can invest each month). Inflation news raises living costs. When cash runs short, holdings are sold automatically.',
     tip_fx: 'Yen per dollar. A higher number means a weaker yen. The Japan Total ETF is yen-based, so a weaker yen lowers its dollar value.',
     mute_title: 'Sound ON/OFF (M key)', news_empty: '— Waiting for news —',
     sec_title: 'ALL ETFs (click to trade below)', sec_legend: '🔥Hot / 💎Cheap / 📈High ROE',
@@ -732,12 +706,12 @@ const I18N = {
     earn_head: '📑 Earnings: ', earn_beat: 'Beat → ', earn_miss: 'Miss → ', earn_none: 'No big surprises overall', earn_more: '+{n} more',
     tag_beat: '▲Beat', tag_miss: '▼Miss',
     forced: '🚨 Cash shortfall: force-sold {n} sh of {names}', dividend: '💰 Dividends received +{v} ({n} holdings)',
-    sens: ' — {desc} (Tailwinds: {up} / Headwinds: {down})', sens_none: 'none', sens_us: ' — {desc} (Tailwinds: Boom / Headwinds: Recession)',
+    sens: ' — {desc} (Tailwinds: {up} / Headwinds: {down})', sens_none: 'none',
     res_title_ok: '10 YEARS COMPLETE // RESULT', res_title_bk: 'GAME OVER // BANKRUPT',
-    r_final: 'Final net worth', r_principal: 'Principal (initial cash + cumulative net)', r_pnl: 'Gain/Loss', r_ratio: ' (×{r} of principal)',
+    r_final: 'Final net worth', r_principal: 'Principal (initial cash + cumulative investable)', r_pnl: 'Gain/Loss', r_ratio: ' (×{r} of principal)',
     r_div: 'Dividends received', r_dca: 'If you had simply done monthly DCA (dividends reinvested)', jp: 'Japan Total', us: 'US Total',
     r_crash: 'Major downturn this game', r_crash_val: '{name} in year {y}', r_crash_none: 'None',
-    r_flow: 'Final monthly net: {flow}/mo (living cost {living}) / Forced sales: {n}', r_rank: 'Rank',
+    r_flow: 'Final monthly investable: {flow}/mo (living cost {living}) / Forced sales: {n}', r_rank: 'Rank',
     r_bankrupt: 'You could not cover your living costs, and even after selling every holding your cash went negative.',
     c_big: 'You left DCA far behind — a decade of reading the market’s waves.', c_beat: 'You beat DCA. News and price action worked in your favor over the decade.',
     c_mid: 'You beat the {worse} DCA but fell short of the {better} DCA.', c_even: 'About even with DCA. Despite all the trading, the steadiness of DCA stands out.',
@@ -746,53 +720,37 @@ const I18N = {
     diff_label: 'Difficulty', diff_normal: 'Normal', diff_hard: 'Hard',
     diff_desc_normal: 'Normal: calmer markets, slower growth in living costs, fewer and shallower crashes. News is priced in slowly, so it is easier to get ahead of it.',
     diff_desc_hard: 'Hard: wilder price swings, living costs that rise faster with inflation, more frequent crashes, and news that is priced in quickly.',
-    r_vs_dca: 'Versus DCA (average of Japan and US): ×{r}',
+    tagline: '',
+    set_lang: 'Language', set_cur: 'Currency', set_diff: 'Difficulty', cur_jpy: 'Yen (¥)', cur_usd: 'US Dollar ($)',
+    btn_howto: 'How to play', btn_settings: '⚙ Settings', settings_title: 'Settings', settings_note: 'Changing settings restarts the game from the beginning.',
+    btn_apply: 'Apply & restart', btn_cancel: 'Cancel', tip_help: 'How to play', tip_settings: 'Settings (changing them restarts the game)',
+    tip_fx_JPY: 'Yen per dollar. A higher number means a weaker yen. US ETFs are priced in yen here, so a weaker yen helps them and a stronger yen hurts.',
+    tip_fx_USD: 'Yen per dollar. A higher number means a weaker yen. The Japan Total ETF is yen-based, so a weaker yen lowers its dollar value.',
+    sens_us_JPY: ' — {desc} (Tailwinds: Boom, weak yen / Headwinds: Recession, strong yen)', sens_us_USD: ' — {desc} (Tailwinds: Boom / Headwinds: Recession)',
+    desc_us_JPY: 'A total-market ETF blending the 11 US sectors (S&P 500-like; Technology is about 30%). Priced in yen with no currency hedge.',
+    desc_us_USD: 'A total-market ETF blending the 11 US sectors (S&P 500-like; Technology is about 30%). Priced in dollars, so there is no FX effect for you.',
+    desc_jp_JPY: 'Tracks the Japanese stock market (Nikkei-style). It sometimes moves differently from US stocks.',
+    desc_jp_USD: 'Tracks the Japanese stock market (Nikkei-style). It is priced in yen, so a weaker yen lowers its dollar value. It sometimes moves differently from US stocks.',
+    sl_next: 'Next', sl_prev: 'Back', sl_skip: 'Skip', sl_done: 'Let’s go',
+    fig1_you: 'You', fig1_dca: 'DCA', fig1_y0: 'Start', fig1_y10: 'Year 10',
+    fig3_price: 'Price', fig3_fair: 'Fair value', fig3_ma: '200-day MA', fig3_vol: 'Volume', fig3_cheap: 'Cheap', fig3_exp: 'Expensive',
+    fig4_salary: 'Salary {v}', fig4_living: 'Living cost', fig4_forced: 'Forced sale', fig4_y: 'Y{n}',
+    fig1_head: 'Beat DCA', fig_home: 'Your currency', fig_fx: 'FX effect', fig_nofx: 'No FX effect', fig_weak: 'Weak ¥', fig_strong: 'Strong ¥', fig_us: 'US ETFs', fig_jp: 'Japan Total'
   }
 };
-Object.assign(I18N.ja, {
-  tagline: '10年間で、毎月の積立に勝てるか。',
-  set_lang: '言語', set_cur: '通貨', set_diff: '難易度', cur_jpy: '円 (¥)', cur_usd: 'ドル ($)',
-  btn_howto: '遊び方', btn_settings: '⚙ 設定', settings_title: '設定', settings_note: '設定を変えると、ゲームは最初からやり直しになります。',
-  btn_apply: '適用してやり直す', btn_cancel: 'キャンセル', tip_help: '遊び方を見る', tip_settings: '設定（変更するとやり直し）',
-  tip_fx_JPY: '1ドルが何円か。数字が大きいほど円安。米国のETFは円建てなので、円安で有利・円高で不利になります',
-  tip_fx_USD: '1ドルが何円か。数字が大きいほど円安。日本総合ETFは円建てなので、円安だとドルでの価値が下がります',
-  sens_us_JPY: ' — {desc}（追い風: 好景気・円安 ／ 逆風: 不景気・円高）', sens_us_USD: ' — {desc}（追い風: 好景気 ／ 逆風: 不景気）',
-  desc_us_JPY: '米国の11業種をまとめた総合ETF（S&P500風。情報技術が約3割）。円建て・為替ヘッジなし',
-  desc_us_USD: '米国の11業種をまとめた総合ETF（S&P500風。情報技術が約3割）。ドル建てなので為替の影響なし',
-  desc_jp_JPY: '日本株全体の動き（日経平均風）。米国株とは別の動きをする時期もある',
-  desc_jp_USD: '日本株全体の動き（日経平均風）。円建てなので、円安だとドルでの価値が下がる',
-  sl_next: '次へ', sl_prev: '戻る', sl_skip: 'スキップ', sl_done: 'はじめる',
-  fig1_you: 'あなた', fig1_dca: '積立', fig1_y0: 'スタート', fig1_y10: '10年後',
-  fig3_price: '株価', fig3_fair: '理論株価', fig3_ma: '200日線', fig3_vol: '出来高', fig3_cheap: 'お得', fig3_exp: '割高',
-  fig4_salary: '給与 {v}', fig4_living: '生活費', fig4_forced: '強制売却', fig4_y: '{n}年',
-});
-Object.assign(I18N.en, {
-  tagline: 'Can you beat monthly DCA in 10 years?',
-  set_lang: 'Language', set_cur: 'Currency', set_diff: 'Difficulty', cur_jpy: 'Yen (¥)', cur_usd: 'US Dollar ($)',
-  btn_howto: 'How to play', btn_settings: '⚙ Settings', settings_title: 'Settings', settings_note: 'Changing settings restarts the game from the beginning.',
-  btn_apply: 'Apply & restart', btn_cancel: 'Cancel', tip_help: 'How to play', tip_settings: 'Settings (changing them restarts the game)',
-  tip_fx_JPY: 'Yen per dollar. A higher number means a weaker yen. US ETFs are priced in yen here, so a weaker yen helps them and a stronger yen hurts.',
-  tip_fx_USD: 'Yen per dollar. A higher number means a weaker yen. The Japan Total ETF is yen-based, so a weaker yen lowers its dollar value.',
-  sens_us_JPY: ' — {desc} (Tailwinds: Boom, weak yen / Headwinds: Recession, strong yen)', sens_us_USD: ' — {desc} (Tailwinds: Boom / Headwinds: Recession)',
-  desc_us_JPY: 'A total-market ETF blending the 11 US sectors (S&P 500-like; Technology is about 30%). Priced in yen with no currency hedge.',
-  desc_us_USD: 'A total-market ETF blending the 11 US sectors (S&P 500-like; Technology is about 30%). Priced in dollars, so there is no FX effect for you.',
-  desc_jp_JPY: 'Tracks the Japanese stock market (Nikkei-style). It sometimes moves differently from US stocks.',
-  desc_jp_USD: 'Tracks the Japanese stock market (Nikkei-style). It is priced in yen, so a weaker yen lowers its dollar value. It sometimes moves differently from US stocks.',
-  sl_next: 'Next', sl_prev: 'Back', sl_skip: 'Skip', sl_done: 'Let’s go',
-  fig1_you: 'You', fig1_dca: 'DCA', fig1_y0: 'Start', fig1_y10: 'Year 10',
-  fig3_price: 'Price', fig3_fair: 'Fair value', fig3_ma: '200-day MA', fig3_vol: 'Volume', fig3_cheap: 'Cheap', fig3_exp: 'Expensive',
-  fig4_salary: 'Salary {v}', fig4_living: 'Living cost', fig4_forced: 'Forced sale', fig4_y: 'Y{n}',
-});
-Object.assign(I18N.ja, { fig1_head: '積立に勝て', fig_home: 'あなたの通貨', fig_fx: '為替の影響あり', fig_nofx: '影響なし', fig_weak: '円安', fig_strong: '円高', fig_us: '米国ETF', fig_jp: '日本総合' });
-Object.assign(I18N.en, { fig1_head: 'Beat DCA', fig_home: 'Your currency', fig_fx: 'FX effect', fig_nofx: 'No FX effect', fig_weak: 'Weak ¥', fig_strong: 'Strong ¥', fig_us: 'US ETFs', fig_jp: 'Japan Total' });
+
+function activeLang() {
+  return (pending && pending.lang) || LANG;
+}
+
 function t(key, vars) {
-  let s = I18N[LANG][key] ?? I18N.ja[key] ?? key;
+  const lg = activeLang();
+  let s = I18N[lg]?.[key] ?? I18N.ja[key] ?? key;
   if (vars) Object.keys(vars).forEach(k => { s = s.split('{' + k + '}').join(vars[k]); });
   return s;
 }
-const L = (x) => (x && typeof x === 'object') ? (x[LANG] ?? x.ja) : x;   // {ja, en} から現在の言語を選ぶ
+const L = (x) => (x && typeof x === 'object') ? (x[activeLang()] ?? x.ja) : x;
 
-// 英語版での銘柄名・説明（日本語版は SECTORS_INIT の値をそのまま使う）
 const EN_INFO = {
   0:  { name: 'Technology',          ex: 'Software, chips',       desc: 'Software, semiconductors and IT hardware. Fast growth means big swings, and it is weak when interest rates rise.' },
   1:  { name: 'Health Care',         ex: 'Drugs, med devices',    desc: 'Pharmaceuticals, medical devices and hospitals. A defensive sector that holds up when the economy slows.' },
@@ -809,8 +767,7 @@ const EN_INFO = {
   12: { name: 'Japan Total ETF',     ex: 'Nikkei-style',          desc: 'Tracks the Japanese stock market (Nikkei-style). It is priced in yen, so a weaker yen lowers its dollar value. It sometimes moves differently from US stocks.' }
 };
 
-// ---- 金額の表示（内部の数値は日本円基準のまま。ドル表示は「1単位＝0.01ドル」）----
-function fmtYen(v) {      // 金額（名前は旧称。通貨を問わない）
+function fmtYen(v) {
   if (HOME === 'USD') {
     const d = v / 100, a = Math.abs(d);
     const dec = a < 100 ? 2 : 0;
@@ -820,63 +777,42 @@ function fmtYen(v) {      // 金額（名前は旧称。通貨を問わない）
   const neg = Math.round(v) < 0 ? '-' : '';
   return LANG === 'en' ? `${neg}¥${n}` : `${neg}${n}円`;
 }
-function fmtPx(v) { return HOME === 'USD' ? '$' + (v / 100).toFixed(2) : fmtYen(v); }                // 1口あたりの価格
-function axisPx(v) { return HOME === 'USD' ? (v / 100).toFixed(2) : `${Math.round(v)}`; }             // チャート軸の価格
+function fmtPx(v) { return HOME === 'USD' ? '$' + (v / 100).toFixed(2) : fmtYen(v); }
+function axisPx(v) { return HOME === 'USD' ? (v / 100).toFixed(2) : `${Math.round(v)}`; }
 function fmtEps(v) { return HOME === 'USD' ? '$' + (v / 100).toFixed(2) : (LANG === 'en' ? `¥${v.toFixed(1)}` : `${v.toFixed(1)}円`); }
 function fmtBps(v) { return HOME === 'USD' ? '$' + (v / 100).toFixed(2) : (LANG === 'en' ? `¥${Math.round(v).toLocaleString('en-US')}` : `${Math.round(v).toLocaleString('en-US')}円`); }
 
-const MONTHS_TOTAL = 120; // 10 years
-const MS_PER_MONTH = 2000; // 2.0s per month -> 4 mins total
-const TICK_MS = 250; // 8 ticks per month
+const MONTHS_TOTAL = 120;
+const MS_PER_MONTH = 2000;
+const TICK_MS = 250;
 
-// ---- 市場の調整つまみ ----
-const MEAN_REV = 0.018;        // perMult が毎ティック 1.0 へ戻る速さ
-const EARN_KEEP = 0.45;        // 決算時に乖離が残る割合（小さいほど強く平均回帰）
-const LAG_SHARE = 0.75;        // ニュース等の材料のうち、出た瞬間には株価に反映されない割合
-const EARN_LAG_SHARE = 0.6;    // 決算のときの同割合
-const LAG_RECOVER = 0.09;      // 1ティックあたりの織り込み速度（約3ヶ月でほぼ完了）
-const SECTOR_DRIFT = 0.004;    // 個別セクターの業績が四半期ごとに平均で上乗せされる成長（日本総合の積立が元本割れしにくくする）
-const CRASH_PROB = 0.65;       // 大きな下落局面が起きるゲームの割合
+const MEAN_REV = 0.018;
+const EARN_KEEP = 0.45;
+const SECTOR_DRIFT = 0.004;
 const TICKS_PER_MONTH = MS_PER_MONTH / TICK_MS;
-const HIST_LEN = 200;          // 保持する履歴の長さ（ティック）。200日線の計算用
-const VIEW_TICKS = 96;         // チャートに表示する長さ（約12ヶ月）
-const MA_LONG = 80;            // 200日移動平均＝ゲーム内の約10ヶ月（1ヶ月=8ティック）
-// 市場全体に共通する値動き（全セクターが連動して動く。現実の相関を再現）。年率約15%のゆらぎで、ゆっくり適正水準へ戻る
-const MKT_SIGMA = 0.0153;      // 1ティックの標準偏差
+const HIST_LEN = 200;
+const VIEW_TICKS = 96;
+const MA_LONG = 80;
 const MKT_KAPPA = 0.006;
-const FX_SIGMA = 1.7;          // ドル円の1ティックあたりのゆらぎ（円）       // 1ティックあたり適正水準へ戻る速さ
+const FX_SIGMA = 1.7;
 function gauss() { return Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(2 * Math.PI * Math.random()); }
 
-// ---- 家計・ランク設定（ここを触るとバランス調整できる） ----
 const INITIAL_CASH = 100000;
-const SALARY = 50000;          // 月給（固定）
-const LIVING_BASE = 35000;     // 生活費の初期値
-const CPI_UP_RATE = 0.07;      // 物価高ニュースでの生活費上昇率 = この値 × 強さ(0.6〜1.4)
-const CPI_DOWN_RATE = 0.01;    // 物価一服ニュースでの生活費低下率（物価は下がりにくい）
-const MACRO_OFFSET = 4;        // 経済ニュースの発表月 = month % 6 === 4（決算の3の倍数月とずらす）
-// ---- 難易度（スタート画面で選ぶ）。hard=従来の設定、normal=やや緩め ----
-//   cpiUp/cpiDown=物価ニュースでの生活費の上がり方、crashProb/crashDepth=大きな下落の起きやすさと深さ、
-//   lagShare/earnLagShare/lagRecover=ニュースの織り込みの遅さ（遅いほど先回りしやすい）、mktSigma=市場全体の揺れ
+const SALARY = 50000;
+const LIVING_BASE = 35000;
+const MACRO_OFFSET = 4;
+
 const DIFFS = {
   hard:   { cpiUp: 0.07, cpiDown: 0.01, crashProb: 0.65, crashDepth: 1.0, lagShare: 0.75, earnLagShare: 0.60, lagRecover: 0.09, mktSigma: 0.0153 },
   normal: { cpiUp: 0.04, cpiDown: 0.01, crashProb: 0.50, crashDepth: 0.8, lagShare: 0.85, earnLagShare: 0.65, lagRecover: 0.07, mktSigma: 0.0135 }
 };
 let DIFF = 'normal';
 const DF = () => DIFFS[DIFF];
-// ランクは「同じ相場で日本総合・米国総合を積み立てた場合（2つの平均）」に対する最終総資産の倍率で判定
 const RANK_TABLE = {
   hard:   [{ min: 1.30, label: 'S (LEGEND)' }, { min: 1.10, label: 'A (MASTER)' }, { min: 0.90, label: 'B (PRO)' }, { min: 0, label: 'C' }],
   normal: [{ min: 1.20, label: 'S (LEGEND)' }, { min: 1.00, label: 'A (MASTER)' }, { min: 0.80, label: 'B (PRO)' }, { min: 0, label: 'C' }]
 };
-// （旧）元本比のランク表。参考として残す
-const RANKS = [
-  { min: 4.5,  label: 'S (LEGEND)' },   // ニュースの出遅れ買いを的確に拾い続けた水準
-  { min: 2.5,  label: 'A (MASTER)' },   // 割安買い・過熱売りをうまく回し、積立（中央値≒1.5〜1.6）を大きく上回った水準
-  { min: 1.5,  label: 'B (PRO)' },      // 積立（配当再投資）並み
-  { min: 0,    label: 'C' }
-];
 
-// ---- 効果音（Web Audio APIで合成。外部ファイル不要） ----
 let audioCtx = null;
 let sfxMuted = false;
 let sfxCursor = 0;
@@ -892,7 +828,6 @@ function ensureAudio() {
   } catch (e) { audioCtx = null; }
 }
 
-// f:周波数 d:長さ(秒) at:開始オフセット t:波形 v:音量 to:終端周波数
 const SFX = {
   'buy':   [{ f: 523, d: 0.07, t: 'triangle', v: 0.08 }, { f: 784, d: 0.10, at: 0.06, t: 'triangle', v: 0.08 }],
   'sell':  [{ f: 988, d: 0.06, t: 'square', v: 0.04 }, { f: 1319, d: 0.16, at: 0.05, t: 'square', v: 0.04 }],
@@ -900,7 +835,7 @@ const SFX = {
   'toast-hot':   [{ f: 880, d: 0.08, t: 'square', v: 0.04 }, { f: 880, d: 0.08, at: 0.12, t: 'square', v: 0.04 }],
   'toast-cold':  [{ f: 392, d: 0.35, t: 'sawtooth', v: 0.04, to: 262 }],
   'toast-macro': [{ f: 784, d: 0.40, v: 0.07 }, { f: 1175, d: 0.30, v: 0.03 }],
-  'earnings':    [{ f: 1047, d: 0.50, t: 'triangle', v: 0.07 }, { f: 1319, d: 0.50, at: 0.18, t: 'triangle', v: 0.07 }, { f: 1568, d: 0.80, at: 0.36, t: 'triangle', v: 0.07 }],
+  'earnings':    [{ f: 1047, d: 0.50, t: 'triangle', v: 0.07 }, { f: 1319, d: 0.50, at: 0.18, t: 'triangle', v: 0.07 }, { f: 1568, d: 0.80, at: 0.36, t: 0.07 }],
   'forced':      [{ f: 140, d: 0.22, t: 'sawtooth', v: 0.08 }, { f: 120, d: 0.30, at: 0.26, t: 'sawtooth', v: 0.08 }],
   'dividend':    [{ f: 1319, d: 0.08, t: 'triangle', v: 0.07 }, { f: 1760, d: 0.18, at: 0.07, t: 'triangle', v: 0.07 }, { f: 2093, d: 0.26, at: 0.14, t: 'triangle', v: 0.05 }],
   'end-good':    [{ f: 523, d: 0.15, t: 'triangle', v: 0.08 }, { f: 659, d: 0.15, at: 0.15, t: 'triangle', v: 0.08 }, { f: 784, d: 0.15, at: 0.30, t: 'triangle', v: 0.08 }, { f: 1047, d: 0.70, at: 0.45, t: 'triangle', v: 0.09 }],
@@ -914,7 +849,7 @@ function playSfx(name) {
   try {
     const now = audioCtx.currentTime;
     if (sfxCursor < now) sfxCursor = now;
-    if (sfxCursor - now > 1.2) return; // 重なりすぎたら捨てる
+    if (sfxCursor - now > 1.2) return;
     let len = 0;
     notes.forEach(n => {
       const st = sfxCursor + (n.at || 0);
@@ -932,8 +867,8 @@ function playSfx(name) {
       osc.stop(st + n.d + 0.03);
       len = Math.max(len, (n.at || 0) + n.d);
     });
-    sfxCursor += len * 0.7; // 連続する音は少し重ねて鳴らす
-  } catch (e) { /* 音が鳴らなくてもゲームは続行 */ }
+    sfxCursor += len * 0.7;
+  } catch (e) {}
 }
 
 function toggleMute() {
@@ -943,9 +878,7 @@ function toggleMute() {
   if (!sfxMuted) { ensureAudio(); playSfx('toast-macro'); }
 }
 
-// ---- 総資産グラフ（現金＋ETF別評価額の積み上げ） ----
 const SECTOR_COLORS = ['#00e5ff', '#ffab00', '#ff4081', '#00e676', '#b388ff', '#ff8a65', '#64ffda', '#ffd740', '#82b1ff', '#f48fb1', '#9ccc65', '#40c4ff', '#ffcc80'];
-// カード背景に薄く敷くSVGアイコン（外部ファイルなし）
 const SECTOR_ICONS = [
   '<rect x="20" y="20" width="24" height="24" rx="3"/><rect x="27" y="27" width="10" height="10"/><path d="M26 20v-9M32 20v-9M38 20v-9M26 44v9M32 44v9M38 44v9M20 26h-9M20 32h-9M20 38h-9M44 26h9M44 32h9M44 38h9"/>',
   '<rect x="12" y="25" width="40" height="14" rx="7" transform="rotate(-35 32 32)"/><path d="M28 26.3 36 37.7"/>',
@@ -977,8 +910,8 @@ function recordSnapshot() {
     cash: Math.max(0, state.cash),
     vals: state.sectors.map(s => s.shares * s.price),
     contrib: state.contrib,
-    benchJp: state.bench.jpUnits * idxOf('jpIndex').price,   // 積立比較：同じ入金を日本総合ETFに積み立てた場合
-    benchUs: state.bench.usUnits * idxOf('usIndex').price    // 同・米国総合ETF(ヘッジ有)
+    benchJp: state.bench.jpUnits * idxOf('jpIndex').price,
+    benchUs: state.bench.usUnits * idxOf('usIndex').price
   };
 }
 
@@ -1016,7 +949,6 @@ function drawAssetChart() {
   const X = i => padL + (i / TOTAL_TICKS) * cw;
   const Y = v => padT + ch - (v / maxV) * ch;
 
-  // grid & right-side labels
   ctx.strokeStyle = '#1b2332';
   ctx.lineWidth = 1;
   ctx.fillStyle = '#8b9bb4';
@@ -1031,7 +963,6 @@ function drawAssetChart() {
     ctx.fillText(`${yr}Y`, Math.min(X(yr * 12 * (MS_PER_MONTH / TICK_MS)), padL + cw - 14), h - 3);
   }
 
-  // stacked areas: layer 0 = cash, 1..n = instruments
   ctx.globalAlpha = 0.85;
   for (let k = 0; k <= n; k++) {
     ctx.fillStyle = k === 0 ? CASH_COLOR : SECTOR_COLORS[k - 1];
@@ -1058,20 +989,16 @@ function drawAssetChart() {
     ctx.stroke();
     ctx.setLineDash([]);
   };
-  line(i => cum[i][n], '#e2e8f0', 1.6, []);                 // 総資産（白）
-  line(i => hist[i].contrib, '#ffab00', 1.4, [5, 3]);        // 元本（黄の破線）
-  line(i => hist[i].benchJp, '#00e5ff', 1.4, [2, 3]);        // 積立：日本総合（シアンの点線）
-  line(i => hist[i].benchUs, '#ff4081', 1.4, [2, 3]);        // 積立：米国総合（マゼンタの点線）
+  line(i => cum[i][n], '#e2e8f0', 1.6, []);
+  line(i => hist[i].contrib, '#ffab00', 1.4, [5, 3]);
+  line(i => hist[i].benchJp, '#00e5ff', 1.4, [2, 3]);
+  line(i => hist[i].benchUs, '#ff4081', 1.4, [2, 3]);
 }
 
 const shortName = (s) => s.name.split('・')[0];
-// 理論株価に対する株価の位置（1.0＝適正、高いほど割高）。バッジやPERタグの判定に使う
-// 銘柄の現地通貨（fx:true=ドル、それ以外=円）からホーム通貨への換算係数。日本語版（ホーム=円）は米国ETFが、英語版（ホーム=ドル）は日本総合ETFが為替の影響を受ける
 function fxMult(s, f = state.usdjpy / 150) { return HOME === 'JPY' ? (s.fx ? f : 1) : (s.fx ? 1 : 1 / f); }
 function valRatio(s) { return s.price / (s.eps * s.basePer * fxMult(s)); }
 
-// 業績や期待倍率の変化を適用する。株価はその一部だけ即反映し、残りは数ヶ月かけて織り込まれる
-// 出来高（平常=1.0）：値動きが大きいほど増え、ニュース・決算など材料が出た直後に急増して数ティックで落ち着く
 function nextVolume(s, ret) {
   s.absEma += 0.05 * (ret - s.absEma);
   const rel = ret / Math.max(1e-4, s.absEma);
@@ -1082,11 +1009,10 @@ function applyShock(s, mutate, share = DF().lagShare) {
   const before = s.eps * s.perMult;
   mutate(s);
   const F = (s.eps * s.perMult) / Math.max(1e-9, before);
-  s.volBoost = Math.max(s.volBoost, 1 + Math.min(3.5, Math.abs(Math.log(F)) * 25));   // 材料の大きさに応じて出来高が急増
+  s.volBoost = Math.max(s.volBoost, 1 + Math.min(3.5, Math.abs(Math.log(F)) * 25));
   s.lagMult = Math.max(0.5, Math.min(2.0, s.lagMult * Math.pow(F, -share)));
 }
-// ---- 経済ニュース（半年ごと）。効果の数字は「セクターid: 強さ」。逆方向のニュースは符号を反転して使う ----
-// id: 0半導体 1銀行 2自動車 3商社 4医薬品 5食品 6小売 7電力 8不動産 9エンタメ
+
 const PRICE_NEWS = { pos: { label: { ja: '物価高', en: 'Inflation' }, text: { ja: '物価高が加速', en: 'Inflation accelerates' }, fx: { 6: 1.5, 7: 0.8, 3: -1.0, 9: -1.0 } }, neg: { label: { ja: '物価一服', en: 'Inflation eases' }, text: { ja: '物価高が一服', en: 'Inflation cools' } } };
 const NEWS_POOL = [
   { fxMove: 8, note: { JPY: { ja: '米国ETFは円建てで増減', en: 'US ETFs move in yen terms' }, USD: { ja: '日本総合ETFのドル価値は逆に動く', en: 'Japan ETF’s USD value moves the other way' } },
@@ -1096,19 +1022,17 @@ const NEWS_POOL = [
   { pos: { label: { ja: '原油高', en: 'Oil up' }, text: { ja: '原油価格が高騰', en: 'Oil prices surge' }, fx: { 6: 1.6, 7: 0.5, 3: -0.8, 5: -0.6 } }, neg: { label: { ja: '原油安', en: 'Oil down' }, text: { ja: '原油価格が下落', en: 'Oil prices fall' } } },
   { pos: { label: { ja: '好景気', en: 'Boom' }, text: { ja: '景気が拡大', en: 'The economy expands' }, fx: { 3: 1.1, 5: 1.0, 2: 0.9, 7: 0.9, 0: 0.8, 12: 0.7, 6: 0.6, 4: -0.5, 8: -0.5, 1: -0.4 } }, neg: { label: { ja: '不景気', en: 'Recession' }, text: { ja: '景気が後退', en: 'The economy contracts' } } }
 ];
-// ニュースの方向(sign: +1 / -1)から各セクターへの効果を作る
 function newsEffects(ev, sign) {
   const base = ev.pos.fx;
   const out = {};
   Object.keys(base).forEach(id => { out[id] = base[id] * sign; });
   return out;
 }
-// 操作中の銘柄の説明と、「どのニュースで追い風/逆風か」
 function sensText(a) {
   if (a.kind === 'usIndex') return t('sens_us_' + HOME, { desc: a.desc });
   const ups = [], downs = [];
   [PRICE_NEWS, ...NEWS_POOL].forEach(ev => {
-    if (HOME === 'USD' && a.kind === 'jpIndex' && ev === NEWS_POOL[0]) return;   // 英語版：円安は日本総合のドル価値を下げるので除外
+    if (HOME === 'USD' && a.kind === 'jpIndex' && ev === NEWS_POOL[0]) return;
     const e = ev.pos.fx[a.id];
     if (!e) return;
     (e > 0 ? ups : downs).push(L(ev.pos.label));
@@ -1126,7 +1050,6 @@ function rankFor(total, dcaRef) {
   return RANK_TABLE[DIFF].find(r => ratio >= r.min).label;
 }
 
-// ドル円の基調はゲームごとにランダム（円安基調40% / 円高基調40% / 横ばい20%）。単位は「円/月」
 function pickFxTrend() {
   const r = Math.random();
   const mag = 0.2 + Math.random() * 0.2;
@@ -1135,10 +1058,6 @@ function pickFxTrend() {
   return { fxTrend: 0, fxTrendLabel: '横ばい' };
 }
 
-// ---- 大きな下落局面：過去の出来事をモデルにした5つの型（ゲームごとにランダム。起きない回もある）----
-// run=過熱期間(月) peak=過熱のピーク start=崩壊開始(月) fall=下落期間(月) trough=底(1.0=通常) rec=回復期間(月)
-// beta=銘柄ごとの被害の大きさ(1.0=標準、負=逆行高)。書いていない銘柄は defaultBeta（省略時は各銘柄の mb）  fxShift=ドル円の動き(円)
-// id: 0情報技術 1ヘルスケア 2金融 3一般消費財 4生活必需品 5資本財 6エネルギー 7素材 8公益事業 9不動産 10コミュニケーション 12日本総合
 const SCENARIOS = [
   { id: 'japan', name: { ja: '日本バブル崩壊', en: 'Japan bubble burst' }, run: 12, peak: [1.24, 1.30], start: [15, 36], fall: [20, 28], trough: [0.52, 0.60], rec: [40, 52], ease: false,
     defaultBeta: 0, beta: { 12: 1.0 },
@@ -1174,13 +1093,12 @@ function pickCrash() {
   const n = (r) => Math.round(f(r));
   const text = {};
   Object.keys(sc.text).forEach(k => { text[k] = L(sc.text[k]); });
-  const dep = DF().crashDepth;      // 難易度による下落の深さ（1.0=標準）
+  const dep = DF().crashDepth;
   const peakRaw = sc.id === 'japan' || sc.id === 'it' ? f(sc.peak) : 1;
   return { type: sc.id, name: L(sc.name), run: sc.run, peak: 1 + (peakRaw - 1) * dep,
            start: n(sc.start), fall: Math.max(1, n(sc.fall)), trough: 1 - (1 - f(sc.trough)) * dep, rec: n(sc.rec), ease: sc.ease,
            beta: sc.beta, defaultBeta: sc.defaultBeta, text, fxShift: sc.fxShift || 0 };
 }
-// 市場全体の水準（1.0=通常）。t は経過月（小数）
 function mktRaw(c, t) {
   if (!c) return 1;
   const runStart = c.start - c.run;
@@ -1198,7 +1116,7 @@ function initGame() {
   state = {
     running: false,
     cash: INITIAL_CASH,
-    contrib: INITIAL_CASH,       // 元本（初期資金＋累計の月収支）
+    contrib: INITIAL_CASH,
     livingCost: LIVING_BASE,
     forcedSales: 0,
     bankrupt: false,
@@ -1215,7 +1133,7 @@ function initGame() {
     ...pickFxTrend(),
     ticks: 0,
     month: 0,
-    nextIsPrice: Math.random() < 0.5,   // 経済ニュースは「物価」と「その他」が交互
+    nextIsPrice: Math.random() < 0.5,
     slot1: 0,
     slot2: 1,
     activeId: 0,
@@ -1267,7 +1185,6 @@ function populateSelectors() {
 
 function buildSectorGrid() {
   const grid = document.getElementById('sector-grid');
-  // 11業種（最後の1マスは空白）→ 次の行に 日本総合 | 米国総合
   const order = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, null, 12, 11];
   grid.innerHTML = order.map(id => {
     if (id === null) return '<div class="sec-blank"></div>';
@@ -1289,11 +1206,8 @@ function buildSectorGrid() {
 
 function selectSector(id) {
   state.activeId = id;
-  // クリックしたETFを 01 のチャートに表示（02 に同じETFがあれば入れ替え）
-  if (id !== state.slot1) {
-    if (id === state.slot2) state.slot2 = state.slot1;
-    state.slot1 = id;
-  }
+  // 右グラフ（slot2）はバロメータとして固定し、左グラフ（slot1）のみ切り替える
+  state.slot1 = id;
   updateUI();
   drawCanvas();
 }
@@ -1303,7 +1217,6 @@ function addToast(content, type = 'macro', sfx, sectorId) {
   const el = document.createElement('div');
   el.className = `toast ${type}`;
   if (Array.isArray(content)) {
-    // 文字列と「クリックできるセクター名チップ」の並び
     el.className += ' has-chips';
     let plain = '';
     content.forEach(part => {
@@ -1333,12 +1246,10 @@ function addToast(content, type = 'macro', sfx, sectorId) {
 }
 
 function updateCountdownPill() {
-  document.getElementById('countdown-pill').style.display = 'none'; // 経済ニュースは予告なし（わかりやすさ優先）
+  document.getElementById('countdown-pill').style.display = 'none';
 }
 
 function triggerEvents() {
-
-  // 下落局面のニュース（型によって予兆の有無が違う）
   const cr = state.crash;
   if (cr) {
     const m = state.month, tx = cr.text;
@@ -1346,12 +1257,11 @@ function triggerEvents() {
     if (tx.warn && m === cr.start - 3) addToast(tx.warn, 'hot');
     if (m === cr.start) {
       addToast(tx.crash, 'cold');
-      if (cr.fxShift) state.fxTarget = Math.max(100, Math.min(200, state.fxTarget + cr.fxShift));   // 局面に合わせてドル円も動く
+      if (cr.fxShift) state.fxTarget = Math.max(100, Math.min(200, state.fxTarget + cr.fxShift));
     }
     if (tx.rec && m === cr.start + cr.fall) addToast(tx.rec, 'good');
   }
 
-  // 1. セクターニュース（株価は出た瞬間に全部は動かず、数ヶ月かけて織り込まれる）
   if (Math.random() < 0.28) {
     const newsPool = state.sectors.filter(x => x.kind === 'sector');
     const s = newsPool[Math.floor(Math.random() * newsPool.length)];
@@ -1381,7 +1291,6 @@ function triggerEvents() {
     }
   }
 
-  // 2. 経済ニュース（半年ごと）。「物価」ニュースと「円安・利上げ・猛暑・景気」のランダムが交互。影響するセクターは限定し、カードにも ▲▼ を表示
   if (state.month > 0 && state.month % 6 === MACRO_OFFSET) {
     const isPrice = state.nextIsPrice;
     const ev = isPrice ? PRICE_NEWS : NEWS_POOL[Math.floor(Math.random() * NEWS_POOL.length)];
@@ -1392,7 +1301,6 @@ function triggerEvents() {
     if (ev.fxMove) state.fxTarget = Math.max(100, Math.min(200, state.fxTarget + sign * ev.fxMove * mag));
     let livingText = '';
     if (isPrice) {
-      // 物価ニュースは株価への影響に加えて、生活費（月の支出）が変動する
       const rate = sign > 0 ? DF().cpiUp * mag : -DF().cpiDown * mag;
       state.livingCost = Math.max(LIVING_BASE, Math.round(state.livingCost * (1 + rate) / 100) * 100);
       livingText = t('living', { v: fmtYen(state.livingCost) });
@@ -1420,7 +1328,6 @@ function triggerEvents() {
     state.nextIsPrice = !isPrice;
   }
 
-  // 3. 四半期決算（3ヶ月ごと）：予想EPSとのサプライズ＋過熱/割安の平均回帰
   if (state.month > 0 && state.month % 3 === 0) {
     const goodNames = [], badNames = [];
     state.sectors.filter(x => x.kind === 'sector' || x.kind === 'jpIndex').forEach(s => {
@@ -1440,7 +1347,6 @@ function triggerEvents() {
 
         s.expectedEps = s.eps * (1 + (Math.random() - 0.35) * 0.06);
       }, DF().earnLagShare);
-      // 予想より良かった(▲好決算) / 悪かった(▼不調) セクターをカードにも表示
       if (beatRatio > 0.04) { goodNames.push({ id: s.id, name: shortName(s) }); s.tag = { text: t('tag_beat'), up: true, until: state.ticks + 16 }; }
       else if (beatRatio < -0.04) { badNames.push({ id: s.id, name: shortName(s) }); s.tag = { text: t('tag_miss'), up: false, until: state.ticks + 16 }; }
     });
@@ -1456,12 +1362,10 @@ function triggerEvents() {
   }
 }
 
-// 月次の収支精算。現金が足りなければ評価額の大きい銘柄から強制売却。それでも足りなければ破産(false)
 function settleMonthlyCashflow() {
   const net = SALARY - state.livingCost;
   state.cash += net;
   state.contrib += net;
-  // 積立比較：同じ月収支を総合ETFに積み立て（マイナスの月は取り崩し）
   const jp = idxOf('jpIndex'), us = idxOf('usIndex');
   state.bench.jpUnits = Math.max(0, state.bench.jpUnits + net / jp.price);
   state.bench.usUnits = Math.max(0, state.bench.usUnits + net / us.price);
@@ -1488,7 +1392,6 @@ function settleMonthlyCashflow() {
   return state.cash >= 0;
 }
 
-// ---- 配当（3ヶ月に1回。month % 3 === 2 の月に支払い）。1口あたり＝EPS×配当性向÷4。米国ETFは円換算 ----
 function dividendPerShare(s) {
   if (s.kind === 'usIndex') {
     const comps = state.sectors.filter(x => x.kind === 'sector');
@@ -1497,13 +1400,12 @@ function dividendPerShare(s) {
   }
   return (s.eps * (s.payout || 0) / 4) * fxMult(s);
 }
-function divYield(s) { return (4 * dividendPerShare(s) / s.price) * 100; }   // 年率の配当利回り(%)
+function divYield(s) { return (4 * dividendPerShare(s) / s.price) * 100; }
 function payDividends() {
   let total = 0, n = 0;
   state.sectors.forEach(s => {
     if (s.shares > 0) { total += s.shares * dividendPerShare(s); n++; }
   });
-  // 積立比較は配当を再投資する
   const jp = idxOf('jpIndex'), us = idxOf('usIndex');
   state.bench.jpUnits += state.bench.jpUnits * dividendPerShare(jp) / jp.price;
   state.bench.usUnits += state.bench.usUnits * dividendPerShare(us) / us.price;
@@ -1514,7 +1416,6 @@ function payDividends() {
   }
 }
 
-// 米国総合ETF＝11業種の合成（ウェイトは US_WEIGHTS）。米国インバース＝そのドル建ての逆の値動き
 function updateIndexes() {
   const us = idxOf('usIndex');
   const comps = state.sectors.filter(x => x.kind === 'sector');
@@ -1539,7 +1440,6 @@ function stepTick() {
   const prevMonth = state.month;
   state.month = Math.floor((state.ticks * TICK_MS) / MS_PER_MONTH);
 
-  // Monthly cashflow & events（価格更新より先に処理し、バッジと株価のズレを防ぐ）
   if (state.month > prevMonth) {
     if (!settleMonthlyCashflow()) {
       endGame(true);
@@ -1553,8 +1453,6 @@ function stepTick() {
     triggerEvents();
   }
 
-  // Update prices
-  // USD/JPY（米国総合ETFは為替ヘッジなし。円安で有利・円高で不利）。基調に沿ってゆらぎ、ニュースで目標が動く
   state.fxBase += state.fxTrend / TICKS_PER_MONTH;
   state.fxTarget += (state.fxBase - state.fxTarget) * 0.003 + FX_SIGMA * gauss();
   state.usdjpy += (state.fxTarget - state.usdjpy) * 0.2;
@@ -1564,7 +1462,7 @@ function stepTick() {
   state.mkt = mktRaw(state.crash, state.ticks / TICKS_PER_MONTH);
   state.mktLog += -MKT_KAPPA * state.mktLog + DF().mktSigma * gauss();
   state.sectors.forEach(s => {
-    if (s.kind === 'usIndex') return;   // 米国総合は構成銘柄から計算
+    if (s.kind === 'usIndex') return;
     const prevP = s.price;
     s.perMult += (1.0 - s.perMult) * MEAN_REV + (Math.random() - 0.5) * s.vol * 1.3;
     s.perMult = Math.max(0.42, Math.min(2.5, s.perMult));
@@ -1572,12 +1470,12 @@ function stepTick() {
     const noise = 1 + (Math.random() - 0.5) * s.vol;
     s.lagMult += (1 - s.lagMult) * DF().lagRecover;
     const cr = state.crash;
-    const bsc = cr ? (cr.beta[s.id] ?? (cr.defaultBeta ?? (s.mb ?? 1))) : 1;     // 局面ごとの被害の大きさ
+    const bsc = cr ? (cr.beta[s.id] ?? (cr.defaultBeta ?? (s.mb ?? 1))) : 1;
     const mk = Math.max(0.3, 1 + (state.mkt - 1) * bsc);
-    const mkRW = Math.exp((s.mb ?? 1) * state.mktLog);                             // 市場全体の共通変動（連動の強さ mb）
+    const mkRW = Math.exp((s.mb ?? 1) * state.mktLog);
     s.usdPrev = s.usd;
-    s.usd = fair * s.perMult * s.lagMult * mk * mkRW * noise;      // 通貨換算前
-    const fxS = fxMult(s, fxF);                                     // 現地通貨→ホーム通貨
+    s.usd = fair * s.perMult * s.lagMult * mk * mkRW * noise;
+    const fxS = fxMult(s, fxF);
     s.price = Math.max(50.0, s.usd * fxS);
     s.history.push(s.price);
     s.fairHistory.push(fair * fxS);
@@ -1586,14 +1484,12 @@ function stepTick() {
   });
   updateIndexes();
 
-
   recordSnapshot();
   updateCountdownPill();
   updateUI();
   drawCanvas();
 }
 
-// 割合ボタン用の口数計算（買い＝現金の◯%分を切り捨て、売り＝保有の◯%を切り上げ）
 function buyQtyFor(sec, pct) {
   return Math.floor((state.cash * pct) / sec.price);
 }
@@ -1641,7 +1537,6 @@ function updateUI() {
   document.getElementById('ui-cash').textContent = fmtYen(state.cash);
   document.getElementById('ui-time').textContent = `${y}Y ${String(m).padStart(2,'0')}M / 10Y`;
 
-  // 運用損益（元本比）と月収支
   const invPnl = total - state.contrib;
   const invPct = (invPnl / Math.max(1, state.contrib)) * 100;
   const pnlEl = document.getElementById('ui-pnl');
@@ -1653,13 +1548,11 @@ function updateUI() {
   flowEl.textContent = `${fmtSigned(flow)}${t('per_month')}`;
   flowEl.className = `stat-val flow ${flow > 0 ? 'up' : (flow < 0 ? 'down' : '')}`;
 
-  // USD/JPY（1ヶ月前との比較で矢印）
   const fxRef = state.fxLog[Math.max(0, state.fxLog.length - 9)];
   const fxD = state.usdjpy - fxRef;
   const fxMark = fxD >= 0.15 ? `<span style="color:var(--amber)">${t('fx_weak')}</span>` : (fxD <= -0.15 ? `<span style="color:var(--cyan)">${t('fx_strong')}</span>` : '<span style="color:var(--muted)">→</span>');
   document.getElementById('ui-fx').innerHTML = `${state.usdjpy.toFixed(1)} ${fxMark}`;
 
-  // チャート下のプルダウンを同期し、操作中のスロットを強調
   [['sel-slot1', state.slot1], ['sel-slot2', state.slot2]].forEach(([elId, val]) => {
     const sel = document.getElementById(elId);
     if (String(sel.value) !== String(val)) sel.value = val;
@@ -1667,11 +1560,9 @@ function updateUI() {
   document.getElementById('slot-h1').className = `slot-header ${state.activeId === state.slot1 ? 'on' : ''}`;
   document.getElementById('slot-h2').className = `slot-header ${state.activeId === state.slot2 ? 'on' : ''}`;
 
-  // Update sector cards
   state.sectors.forEach(s => {
     const card = document.getElementById(`card-${s.id}`);
     card.className = `sec-card ${s.id === state.activeId ? 'active' : ''} ${s.shares > 0 ? 'held' : ''}`;
-    // 保有中のカードは、ポートフォリオに占める割合が大きいほど濃くマゼンタに色付け
     if (s.shares > 0) {
       const share = (s.shares * s.price) / Math.max(1, total);
       const alpha = 0.10 + Math.min(0.30, share * 0.6);
@@ -1688,7 +1579,7 @@ function updateUI() {
       const valTxt = (HOME === 'JPY' && LANG === 'ja' && val >= 10000) ? `${(val / 10000).toFixed(1)}万円` : fmtYen(val);
       holdEl.innerHTML = t('hold_line', { n: s.shares.toLocaleString('en-US'), val: valTxt, pl: `<span class="${pl >= 0 ? 'up' : 'down'}">${pl >= 0 ? '+' : ''}${pl.toFixed(1)}%</span>` });
     } else {
-      holdEl.textContent = t('card_note', { ex: s.ex, y: divYield(s).toFixed(1) });   // 持っていないときは「何の会社か」の例と配当利回り
+      holdEl.textContent = t('card_note', { ex: s.ex, y: divYield(s).toFixed(1) });
     }
     document.getElementById(`card-price-${s.id}`).textContent = fmtPx(s.price);
     const prev = s.history[Math.max(0, s.history.length - 8)];
@@ -1708,7 +1599,6 @@ function updateUI() {
     badgeEl.innerHTML = html;
   });
 
-  // Update bottom deck for active sector
   const act = state.sectors[state.activeId];
   const pnl = act.shares > 0 ? (act.price - act.avgCost) * act.shares : 0;
   const pnlStr = `${pnl >= 0 ? '+' : ''}${fmtYen(pnl)}`;
@@ -1718,8 +1608,7 @@ function updateUI() {
   holdEl.textContent = t('deck_holding', { n: act.shares, pnl: pnlStr });
   holdEl.style.color = pnl > 0 ? 'var(--green)' : (pnl < 0 ? 'var(--red)' : 'var(--text)');
 
-  // Fundamentals（コンパクト表示）
-  const fxA = fxMult(act);   // ホーム通貨に換算して表示
+  const fxA = fxMult(act);
   const per = act.price / (act.eps * fxA);
   const pbr = act.price / (act.bps * fxA);
   const roe = (act.eps / act.bps) * 100;
@@ -1732,7 +1621,6 @@ function updateUI() {
 
   document.getElementById('cash-all').disabled = !state.sectors.some(x => x.shares > 0);
 
-  // 資産内訳の凡例（現金と保有ETFの構成比）
   const legendItems = [{ name: t('legend_cash'), color: CASH_COLOR, v: Math.max(0, state.cash) }];
   state.sectors.forEach(s => { if (s.shares > 0) legendItems.push({ name: s.name, color: SECTOR_COLORS[s.id], v: s.shares * s.price }); });
   legendItems.sort((x, y) => y.v - x.v);
@@ -1740,7 +1628,6 @@ function updateUI() {
     .map(it => `<span><i style="background:${it.color}"></i>${it.name} ${(it.v / Math.max(1, total) * 100).toFixed(0)}%</span>`)
     .join('');
 
-  // Trade buttons（買いは現金の割合、売りは保有の割合）
   const maxBuy = Math.floor(state.cash / act.price);
   document.getElementById('info-power').textContent = t('info_power', { n: maxBuy, cash: fmtYen(state.cash) });
   document.getElementById('info-avg').textContent = t('info_avg', { v: act.shares > 0 ? fmtPx(act.avgCost) : t('avg_none') });
@@ -1778,7 +1665,6 @@ function drawCanvas() {
   drawChartSlot(ctx, state.sectors[state.slot1], 0, 0, halfW, h);
   drawChartSlot(ctx, state.sectors[state.slot2], halfW, 0, halfW, h);
 
-  // Center divider
   ctx.strokeStyle = '#263042';
   ctx.lineWidth = 2;
   ctx.beginPath();
@@ -1793,15 +1679,14 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
   const padT = 40, padB = 14, padL = 12, padR = 58;
   const cw = w - padL - padR;
   const ch = h - padT - padB;
-  const volH = Math.max(28, Math.round(ch * 0.22));   // 下部：出来高エリア
+  const volH = Math.max(28, Math.round(ch * 0.22));
   const gapV = 8;
-  const chP = ch - volH - gapV;                        // 上部：価格エリア
+  const chP = ch - volH - gapV;
 
   const H = sec.history, FH = sec.fairHistory, VH = sec.volHistory;
   const n = Math.min(VIEW_TICKS, H.length);
   const off = H.length - n;
   const hs = H.slice(off), fs = FH.slice(off), vs = VH.slice(off);
-  // 200日移動平均（ゲーム内では約10ヶ月分の平均）
   const ma = hs.map((_, j) => {
     let sum = 0, c = 0;
     for (let k = Math.max(0, off + j - MA_LONG + 1); k <= off + j; k++) { sum += H[k]; c++; }
@@ -1818,7 +1703,6 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
   const xAt = (i) => ox + padL + (i / (n - 1)) * cw;
   const polyline = (arr) => arr.forEach((v, i) => { if (i === 0) ctx.moveTo(xAt(i), toY(v)); else ctx.lineTo(xAt(i), toY(v)); });
 
-  // Grid lines
   ctx.strokeStyle = '#1b2332';
   ctx.lineWidth = 1;
   for (let i = 0; i <= 3; i++) {
@@ -1833,7 +1717,6 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
     ctx.fillText(axisPx(val), ox + padL + cw + 6, y + 4);
   }
 
-  // 株価と理論株価のあいだを塗る（理論株価より下＝緑のお得ゾーン／上＝赤の割高ゾーン）
   for (let i = 0; i < n - 1; i++) {
     const diff = (hs[i] - fs[i]) + (hs[i + 1] - fs[i + 1]);
     ctx.fillStyle = diff < 0 ? 'rgba(0, 230, 118, 0.17)' : 'rgba(255, 61, 87, 0.17)';
@@ -1846,7 +1729,6 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
     ctx.fill();
   }
 
-  // Fair value dashed line (amber)
   ctx.strokeStyle = '#ffab00';
   ctx.setLineDash([4, 4]);
   ctx.lineWidth = 1.5;
@@ -1855,14 +1737,12 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // 200日移動平均線（紫）
   ctx.strokeStyle = '#b388ff';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   polyline(ma);
   ctx.stroke();
 
-  // 線の右端ラベル：上にある線のラベルは上側、下にある線は下側に置いて重ならないようにする
   const fairNow = fs[n - 1], maNow = ma[n - 1];
   const fairY = toY(fairNow), maY = toY(maNow);
   const lo = oy + padT + 10, hi = oy + padT + chP - 2;
@@ -1875,7 +1755,6 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
   ctx.fillText(t('ch_ma', { v: fmtPx(maNow) }), ox + padL + cw - 4, clampY(maY < fairY ? maY - 4 : maY + 12));
   ctx.textAlign = 'left';
 
-  // Average acquisition cost horizontal line (magenta)
   if (sec.shares > 0) {
     const avgY = toY(sec.avgCost);
     ctx.strokeStyle = '#ff4081';
@@ -1892,14 +1771,12 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
     ctx.fillText(`AVG ${axisPx(sec.avgCost)}`, ox + padL + 4, Math.max(oy + padT + 10, avgY - 4));
   }
 
-  // Actual price line
   ctx.strokeStyle = '#e2e8f0';
   ctx.lineWidth = 2.2;
   ctx.beginPath();
   polyline(hs);
   ctx.stroke();
 
-  // 下部：出来高（緑＝直前より上昇、赤＝下落）。破線は平常時(1.0)の目安
   const vTop = oy + padT + chP + gapV;
   const vMax = Math.max(1.6, ...vs);
   const bw = Math.max(1, (cw / n) * 0.7);
@@ -1927,7 +1804,6 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
   ctx.font = 'bold 11px monospace';
   ctx.fillText(`×${volRatio.toFixed(1)}`, ox + padL + cw + 6, vTop + 24);
 
-  // 左上：理論株価との差と200日線との差
   const gap = (sec.price / fairNow - 1) * 100;
   const ratio = sec.price / fairNow;
   const verdict = ratio <= 0.82 ? t('v_cheap') : (ratio >= 1.3 ? t('v_hot') : t('v_fair'));
@@ -1939,7 +1815,6 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
   ctx.font = '11px monospace';
   ctx.fillText(t('ch_ma_gap', { g: `${maGap >= 0 ? '+' : ''}${maGap.toFixed(1)}`, dir: maGap >= 0 ? t('ch_up') : t('ch_down') }), ox + padL + 4, oy + 36);
 
-  // Current price label top-right of slot
   ctx.fillStyle = '#e2e8f0';
   ctx.font = 'bold 13px monospace';
   ctx.textAlign = 'right';
@@ -1947,7 +1822,6 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
   ctx.textAlign = 'left';
 }
 
-// 結果の一言（積立との比較で変わる）
 function resultComment(total, jpV, usV, forced) {
   const best = Math.max(jpV, usV);
   const jpWorse = jpV <= usV;
@@ -1971,7 +1845,7 @@ function endGame(bankrupt) {
   const ratio = total / Math.max(1, contrib);
   const jpV = Math.round(state.bench.jpUnits * idxOf('jpIndex').price);
   const usV = Math.round(state.bench.usUnits * idxOf('usIndex').price);
-  const dcaRef = (jpV + usV) / 2;                       // 積立の基準（日本総合と米国総合の平均）
+  const dcaRef = (jpV + usV) / 2;
   const vsDca = total / Math.max(1, dcaRef);
   const rank = bankrupt ? 'F (BANKRUPT)' : rankFor(total, dcaRef);
 
@@ -1995,22 +1869,22 @@ function endGame(bankrupt) {
   renderModal('result');
 }
 
-// ---- 設定（言語・通貨・難易度）。スタート画面と、ゲーム中の⚙で共通 ----
 const DEFAULT_CUR = { ja: 'JPY', en: 'USD' };
-let pending = null;          // 設定パネルで編集中の値（null=その場で反映）
-let modalMode = 'start';     // 'start' | 'result' | 'settings'
-let prevModal = 'start';     // 設定パネルを閉じたときに戻る画面
-let PAUSED = false;          // スライド・設定パネルを開いている間は一時停止
+let pending = null;
+let modalMode = 'start';
+let prevModal = 'start';
+let PAUSED = false;
 let lastResult = { title: '', html: '' };
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
-function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* 保存できない環境では無視 */ } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 function currentSettings() { return { lang: LANG, cur: HOME, diff: DIFF }; }
 function saveSettings() {
   lsSet('st_settings', JSON.stringify(currentSettings()));
-  try { history.replaceState(null, '', `#${LANG}-${HOME.toLowerCase()}-${DIFF}`); } catch (e) { /* プレビュー環境では無視 */ }
+  try { history.replaceState(null, '', `#${LANG}-${HOME.toLowerCase()}-${DIFF}`); } catch (e) {}
 }
 function applyLang() {
-  document.documentElement.lang = LANG;
+  const lg = activeLang();
+  document.documentElement.lang = lg;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n')); });
   document.querySelectorAll('[data-i18n-tip]').forEach(el => {
     const key = el.getAttribute('data-i18n-tip');
@@ -2022,13 +1896,12 @@ function applyLang() {
 }
 function applySettings(s) {
   LANG = s.lang === 'en' ? 'en' : 'ja';
-  HOME = s.cur === 'USD' ? 'USD' : 'JPY';       // ホーム通貨：為替リスクを負う銘柄が入れ替わる
+  HOME = s.cur === 'USD' ? 'USD' : 'JPY';
   DIFF = s.diff === 'hard' ? 'hard' : 'normal';
   saveSettings();
   applyLang();
   initGame();
 }
-// テスト・互換用の入口（言語を変えると通貨はその言語の既定に戻る）
 function setLang(code) { const l = code === 'en' ? 'en' : 'ja'; applySettings({ lang: l, cur: DEFAULT_CUR[l], diff: DIFF }); }
 function setDiff(code) { applySettings({ lang: LANG, cur: HOME, diff: code }); }
 function setCur(code) { applySettings({ lang: LANG, cur: code, diff: DIFF }); }
@@ -2040,12 +1913,23 @@ function refreshSettingsUI() {
     el.className = 'lang-btn' + (((k === 'lang' ? s.lang : (k === 'cur' ? s.cur : s.diff)) === v) ? ' on' : '');
   });
   document.getElementById('diff-desc').textContent = t(s.diff === 'hard' ? 'diff_desc_hard' : 'diff_desc_normal');
+  const descEl = document.getElementById('modal-desc');
+  if (modalMode === 'settings') {
+    descEl.style.display = 'block';
+    descEl.style.textAlign = 'center';
+    descEl.textContent = t('settings_note');
+  } else if (modalMode === 'result') {
+    descEl.style.display = 'block';
+    descEl.style.textAlign = 'left';
+  } else {
+    descEl.style.display = 'none';
+  }
 }
 function pickSetting(kind, val) {
-  if (pending) {        // 設定パネル：「適用してやり直す」を押すまで反映しない
+  if (pending) {
     pending[kind] = val;
     if (kind === 'lang') pending.cur = DEFAULT_CUR[val];
-    refreshSettingsUI();
+    applyLang();
     return;
   }
   const s = currentSettings();
@@ -2061,7 +1945,6 @@ function renderModal(mode) {
   $('settings-box').style.display = isRes ? 'none' : 'block';
   $('btn-howto').style.display = mode === 'start' ? 'inline-block' : 'none';
   $('btn-cancel').style.display = (isRes || isSet) ? 'inline-block' : 'none';
-  $('modal-desc').style.textAlign = isRes ? 'left' : 'center';
   if (isRes) {
     $('modal-title').textContent = lastResult.title;
     $('modal-desc').innerHTML = lastResult.html;
@@ -2069,12 +1952,10 @@ function renderModal(mode) {
     $('btn-cancel').textContent = t('btn_settings');
   } else if (isSet) {
     $('modal-title').textContent = t('settings_title');
-    $('modal-desc').textContent = t('settings_note');
     $('btn-start').textContent = t('btn_apply');
     $('btn-cancel').textContent = t('btn_cancel');
   } else {
-    $('modal-title').textContent = 'SECTOR TERMINAL // 10Y SIM';
-    $('modal-desc').textContent = t('tagline');
+    $('modal-title').textContent = 'SECTOR TERMINAL';
     $('btn-start').textContent = t('start');
     $('btn-howto').textContent = t('btn_howto');
   }
@@ -2091,6 +1972,7 @@ function openSettings() {
 }
 function closeSettings() {
   pending = null;
+  applyLang();
   if (prevModal === 'result') { renderModal('result'); return; }
   document.getElementById('overlay').style.display = 'none';
   modalMode = 'running';
@@ -2101,7 +1983,12 @@ function applyPendingAndRestart() {
   const same = JSON.stringify(s) === JSON.stringify(currentSettings());
   pending = null;
   PAUSED = false;
-  if (same) { if (prevModal === 'result') renderModal('result'); else { document.getElementById('overlay').style.display = 'none'; modalMode = 'running'; } return; }
+  if (same) {
+    applyLang();
+    if (prevModal === 'result') renderModal('result');
+    else { document.getElementById('overlay').style.display = 'none'; modalMode = 'running'; }
+    return;
+  }
   applySettings(s);
   renderModal('start');
 }
@@ -2117,7 +2004,6 @@ function loadInitialSettings() {
   return { lang, cur, diff };
 }
 
-// ---- 遊び方スライド（絵だけで見せる。初回だけ自動表示。ヘッダーの？やスタート画面の「遊び方」からいつでも開ける）----
 let slidesOpen = false, slideIdx = 0;
 const SLIDE_COUNT = 3;
 const SVG_HEAD = 'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 220" style="width:100%;height:auto;max-height:34vh;display:block;font-family:monospace"';
@@ -2138,7 +2024,7 @@ function figGoal() {
     <text x="610" y="214" fill="#e2e8f0" font-size="15" font-weight="bold" text-anchor="end">🏁 ${t('fig1_y10')}</text></svg>`;
 }
 function figEtfs() {
-  const nm = (id) => LANG === 'en' ? EN_INFO[id].name : SECTORS_INIT[id].name;
+  const nm = (id) => activeLang() === 'en' ? EN_INFO[id].name : SECTORS_INIT[id].name;
   const tile = (id, cls) => `<div class="tile ${cls || ''}"><span class="tile-ico">${SECTORS_INIT[id].emoji}</span><span>${nm(id)}</span></div>`;
   return `<div class="tiles">${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(id => tile(id)).join('')}${tile(12, 'wide')}${tile(11, 'wide')}</div>`;
 }
@@ -2175,7 +2061,6 @@ function figMoney() {
     <rect x="${x0 + 7 * (bw + gap) - 8}" y="10" width="172" height="30" fill="#1e2636" stroke="#ff3d57" stroke-width="2"/>
     <text x="${x0 + 7 * (bw + gap) + 78}" y="31" fill="#ff8a9b" font-size="16" font-weight="bold" text-anchor="middle">🚨 ${t('fig4_forced')}</text></svg>`;
 }
-// 選んだ通貨（ホーム通貨）と為替の影響：円なら米国ETF、ドルなら日本総合が為替の影響を受ける
 function figFx() {
   const jpy = HOME === 'JPY';
   const sym = jpy ? '¥' : '$';
@@ -2217,12 +2102,11 @@ function openSlides() {
 function closeSlides() {
   slidesOpen = false; PAUSED = false;
   document.getElementById('slides').style.display = 'none';
-  lsSet('st_seen', '1');          // 初回だけ自動表示（保存できない環境では毎回表示になる）
+  lsSet('st_seen', '1');
 }
 function nextSlide() { if (slideIdx >= SLIDE_COUNT - 1) closeSlides(); else { slideIdx++; renderSlide(); } }
 function prevSlide() { if (slideIdx > 0) { slideIdx--; renderSlide(); } }
 
-// Event bindings
 const activeSec = () => state.sectors[state.activeId];
 document.getElementById('btn-buy10').onclick = () => buy(buyQtyFor(activeSec(), 0.10));
 document.getElementById('btn-buy25').onclick = () => buy(buyQtyFor(activeSec(), 0.25));
@@ -2231,7 +2115,6 @@ document.getElementById('btn-sell25').onclick = () => sell(sellQtyFor(activeSec(
 document.getElementById('btn-sell50').onclick = () => sell(sellQtyFor(activeSec(), 0.50));
 document.getElementById('btn-sellall').onclick = () => sell(999999);
 
-// 全部現金化：押し間違い防止のため2回押しで実行
 let cashArmed = false, cashTimer = null;
 document.getElementById('cash-all').onclick = () => {
   const btn = document.getElementById('cash-all');
@@ -2285,7 +2168,6 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('resize', drawCanvas);
 applySettings(loadInitialSettings());
 renderModal('start');
-if (lsGet('st_seen') !== '1') openSlides();      // 初回だけ遊び方スライドを自動表示
 setInterval(stepTick, TICK_MS);
 </script>
 </body>
