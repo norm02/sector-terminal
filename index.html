@@ -203,6 +203,13 @@
   .line-chip { display: flex; align-items: center; gap: 5px; background: var(--panel-alt); color: var(--muted); border: 1px solid var(--border); font-family: var(--font); font-size: 11px; padding: 2px 9px; cursor: pointer; opacity: 0.5; }
   .line-chip:hover { border-color: var(--muted); }
   .line-chip.on { color: var(--text); border-color: var(--muted); font-weight: bold; opacity: 1; }
+  .range-bar { display: flex; flex-shrink: 0; background: var(--panel); border-top: 1px solid var(--border); }
+  .range-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 6px; padding: 2px 10px; }
+  .range-group + .range-group { border-left: 1px solid var(--border); }
+  .range-btn { background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 12px; font-family: var(--font); font-size: 11px; font-weight: bold; padding: 1px 16px; cursor: pointer; }
+  .range-btn:hover { color: var(--text); border-color: var(--muted); }
+  .range-btn.on { background: #1f2d45; color: var(--cyan); border-color: var(--cyan); }
+  .line-chip.dis { opacity: 0.3; cursor: default; }
   .line-chip i { display: inline-block; width: 12px; height: 3px; }
   canvas#marketCanvas {
     position: absolute;
@@ -261,7 +268,7 @@
     flex: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(7, minmax(0, 1fr));
+    grid-template-rows: repeat(6, minmax(0, 1fr));
     min-height: 0;
     gap: 5px;
   }
@@ -517,6 +524,7 @@
     <div id="canvas-wrapper">
       <div class="line-bar"><span class="lb-label" data-i18n="ln_title"></span><button class="line-chip on" data-line="fair"><i style="background:#ffab00"></i><span data-i18n="ln_fair"></span></button><button class="line-chip on" data-line="ma25"><i style="background:#4fc3f7"></i><span data-i18n="ln_ma25"></span></button><button class="line-chip on" data-line="ma200"><i style="background:#b388ff"></i><span data-i18n="ln_ma200"></span></button></div>
       <div id="canvas-area"><canvas id="marketCanvas"></canvas></div>
+      <div class="range-bar"><div class="range-group"><button class="range-btn" data-slot="0" data-range="1y" data-i18n="rg_1y"></button><button class="range-btn" data-slot="0" data-range="3y" data-i18n="rg_3y"></button><button class="range-btn" data-slot="0" data-range="all" data-i18n="rg_all"></button></div><div class="range-group"><button class="range-btn" data-slot="1" data-range="1y" data-i18n="rg_1y"></button><button class="range-btn" data-slot="1" data-range="3y" data-i18n="rg_3y"></button><button class="range-btn" data-slot="1" data-range="all" data-i18n="rg_all"></button></div></div>
       <div class="slot-bar">
         <div class="slot-header" id="slot-h1"><span class="slot-tag">01</span><select id="sel-slot1" class="slot-select"></select></div>
         <div class="slot-header" id="slot-h2"><span class="slot-tag">02</span><select id="sel-slot2" class="slot-select"></select></div>
@@ -595,22 +603,21 @@
 
 <script>
 const SECTORS_INIT = [
-  { id: 0,  code: '01', emoji: '💻', name: '情報技術',       ex: 'ソフト・半導体',     price: 1600, basePer: 28, roe: 0.25, vol: 0.045, mb: 1.20, drift: 0.012, payout: 0.20, fx: true, desc: 'ソフトウェア・半導体・IT機器の会社。成長が速いぶん値動きも大きく、金利上昇に弱い' },
-  { id: 1,  code: '02', emoji: '💊', name: 'ヘルスケア',     ex: '医薬品・医療機器',   price: 1200, basePer: 18, roe: 0.20, vol: 0.014, mb: 0.70, drift: 0.007, payout: 0.27, fx: true, desc: '医薬品・医療機器・病院など。景気に左右されにくい守りの業種' },
-  { id: 2,  code: '03', emoji: '🏦', name: '金融',           ex: '銀行・保険・証券',   price: 900,  basePer: 14, roe: 0.12, vol: 0.021, mb: 1.10, drift: 0.006, payout: 0.30, fx: true, desc: '銀行・保険・証券など。金利が上がると儲けが増えやすく、景気後退に弱い' },
-  { id: 3,  code: '04', emoji: '🛒', name: '一般消費財',     ex: '自動車・EC・旅行',   price: 1300, basePer: 24, roe: 0.22, vol: 0.030, mb: 1.15, drift: 0.007, payout: 0.20, fx: true, desc: '景気がいいと売れる「あると嬉しい物・サービス」。自動車・ネット通販・外食・旅行など' },
-  { id: 4,  code: '05', emoji: '🍙', name: '生活必需品',     ex: '食品・日用品',       price: 900,  basePer: 20, roe: 0.25, vol: 0.005, mb: 0.55, drift: 0.004, payout: 0.55, fx: true, desc: '食品・飲料・日用品・スーパー。景気が悪くても売れる、値動きの穏やかな守りの業種' },
-  { id: 5,  code: '06', emoji: '⚙️', name: '資本財',         ex: '機械・航空・防衛',   price: 1100, basePer: 20, roe: 0.18, vol: 0.021, mb: 1.05, drift: 0.006, payout: 0.30, fx: true, desc: '工場の機械・建設機械・航空機・防衛・物流など「会社が設備投資で買うもの」。景気に敏感' },
-  { id: 6,  code: '07', emoji: '🛢️', name: 'エネルギー',     ex: '石油・ガス',         price: 800,  basePer: 11, roe: 0.14, vol: 0.042, mb: 0.90, drift: 0.003, payout: 0.40, fx: true, desc: '石油・天然ガスの採掘・精製。原油価格やインフレで大きく動き、日本株とは別の動きをする' },
-  { id: 7,  code: '08', emoji: '⛏️', name: '素材',           ex: '化学・金属・鉱山',   price: 850,  basePer: 16, roe: 0.12, vol: 0.030, mb: 1.00, drift: 0.004, payout: 0.30, fx: true, desc: '化学品・鉄鋼・金属・鉱山・紙など「モノの原材料」。景気やインフレの影響を受けやすい' },
-  { id: 8,  code: '09', emoji: '⚡', name: '公益事業',       ex: '電力・ガス・水道',   price: 700,  basePer: 17, roe: 0.09, vol: 0.024, mb: 0.50, drift: 0.004, payout: 0.60, fx: true, desc: '電力・ガス・水道会社。景気に左右されにくい守りの業種で、金利が上がると弱い' },
-  { id: 9,  code: '10', emoji: '🏢', name: '不動産',         ex: 'REIT・不動産',       price: 750,  basePer: 30, roe: 0.06, vol: 0.024, mb: 0.90, drift: 0.004, payout: 0.95, fx: true, desc: 'オフィス・商業施設・住宅などを持つ不動産会社やREIT。金利上昇に特に弱い' },
-  { id: 10, code: '11', emoji: '📡', name: 'コミュニケーション', ex: '通信・SNS・動画',  price: 1000, basePer: 20, roe: 0.14, vol: 0.036, mb: 1.00, drift: 0.008, payout: 0.20, fx: true, desc: '通信会社・SNS・動画配信・ゲーム・広告など「情報や娯楽を届ける会社」' },
-  { id: 11, code: '12', emoji: '🗽', name: '米国総合ETF',    kind: 'usIndex', ex: '11業種の合成', price: 1500, eps: 75.0, bps: 440, basePer: 20, vol: 0, fx: true, desc: '米国の11業種をまとめた総合ETF（S&P500風。情報技術が約3割）。円建て・為替ヘッジなし' },
-  { id: 12, code: '13', emoji: '🗾', name: '日本総合ETF',    kind: 'jpIndex', ex: '日経平均風',   price: 1000, eps: 1000 / 15, bps: 740, basePer: 15, roe: 0.09, vol: 0.022, mb: 0.80, drift: 0.005, payout: 0.30, desc: '日本株全体の動き（日経平均風）。米国株とは別の動きをする時期もある' }
+  { id: 0,  code: '01', emoji: '🤖', name: '半導体・AI',       ex: '半導体・ソフト・AI',   price: 1600, basePer: 28, roe: 0.25, vol: 0.045, mb: 1.20, drift: 0.012, payout: 0.20, fx: true, desc: '半導体・ソフトウェア・AI関連の会社。成長が速いぶん値動きも大きく、金利上昇に弱い' },
+  { id: 1,  code: '02', emoji: '🏦', name: '銀行・金融',       ex: '銀行・保険・証券',     price: 900,  basePer: 14, roe: 0.12, vol: 0.021, mb: 1.10, drift: 0.006, payout: 0.30, fx: true, desc: '銀行・保険・証券など。金利が上がると儲けが増えやすく、景気後退に弱い' },
+  { id: 2,  code: '03', emoji: '🚗', name: '自動車・輸送',     ex: '自動車・鉄道・物流',   price: 1100, basePer: 16, roe: 0.14, vol: 0.028, mb: 1.00, drift: 0.005, payout: 0.30, fx: true, desc: '自動車・鉄道・海運・物流など。景気がいいと伸びやすく、原油高や不景気に弱い' },
+  { id: 3,  code: '04', emoji: '⛏️', name: '資源・エネルギー', ex: '石油・ガス・金属・鉱山', price: 1000, basePer: 12, roe: 0.13, vol: 0.036, mb: 0.95, drift: 0.004, payout: 0.40, fx: true, desc: '石油・天然ガス・金属・鉱山など、資源をとる会社。物価高や原油高に強く、日本株とは別の動きをする時期もある' },
+  { id: 4,  code: '05', emoji: '💊', name: '医薬品・医療',     ex: '医薬品・医療機器',     price: 1200, basePer: 18, roe: 0.20, vol: 0.014, mb: 0.70, drift: 0.007, payout: 0.27, fx: true, desc: '医薬品・医療機器・病院など。景気に左右されにくい守りの業種' },
+  { id: 5,  code: '06', emoji: '🍙', name: '食品・日用品',     ex: '食品・日用品',         price: 900,  basePer: 20, roe: 0.25, vol: 0.005, mb: 0.55, drift: 0.004, payout: 0.55, fx: true, desc: '食品・飲料・日用品・スーパー。景気が悪くても売れる、値動きの穏やかな守りの業種' },
+  { id: 6,  code: '07', emoji: '🛒', name: '小売・EC',         ex: '店舗・ネット通販・旅行', price: 1200, basePer: 22, roe: 0.18, vol: 0.030, mb: 1.10, drift: 0.007, payout: 0.20, fx: true, desc: '店舗・ネット通販・外食・旅行など。景気がいいと売れる「あると嬉しい物・サービス」' },
+  { id: 7,  code: '08', emoji: '⚡', name: '電力・インフラ',   ex: '電力・ガス・水道・通信', price: 700,  basePer: 17, roe: 0.09, vol: 0.022, mb: 0.50, drift: 0.004, payout: 0.60, fx: true, desc: '電力・ガス・水道・通信などの社会インフラ。景気に左右されにくい守りの業種で、金利が上がると弱い' },
+  { id: 8,  code: '09', emoji: '🏢', name: '不動産・建設',     ex: 'REIT・不動産・建設',   price: 800,  basePer: 22, roe: 0.08, vol: 0.026, mb: 0.90, drift: 0.004, payout: 0.70, fx: true, desc: 'オフィス・住宅などを持つ不動産会社やREIT、建設会社。金利上昇に特に弱い' },
+  { id: 9,  code: '10', emoji: '🎮', name: 'エンタメ・IP',     ex: 'ゲーム・アニメ・音楽', price: 1000, basePer: 22, roe: 0.16, vol: 0.038, mb: 1.10, drift: 0.008, payout: 0.20, fx: true, desc: 'ゲーム・アニメ・映像・音楽など、作品やキャラクター（IP）で稼ぐ会社。流行に左右されて値動きが大きい' },
+  { id: 10, code: '11', emoji: '🗽', name: '米国総合ETF',    kind: 'usIndex', ex: '米国株を合成', price: 1500, eps: 75.0, bps: 440, basePer: 20, vol: 0, fx: true, desc: '米国株全体の動きを表す総合ETF（架空）。円建て・為替ヘッジなし' },
+  { id: 11, code: '12', emoji: '🗾', name: '日本総合ETF',    kind: 'jpIndex', ex: '日本の大型株を合成',   price: 1000, eps: 1000 / 15, bps: 740, basePer: 15, roe: 0.09, vol: 0.022, mb: 0.80, drift: 0.005, payout: 0.30, desc: '日本株全体の動きを表す総合ETF（架空）。米国株とは別の動きをする時期もある' }
 ];
 SECTORS_INIT.forEach(x => { if (x.eps === undefined) { x.eps = x.price / x.basePer; x.bps = x.eps / x.roe; } });
-const US_WEIGHTS = [0.30, 0.11, 0.13, 0.10, 0.06, 0.08, 0.04, 0.03, 0.03, 0.03, 0.09];
+const US_WEIGHTS = [0.28, 0.12, 0.09, 0.08, 0.11, 0.07, 0.09, 0.04, 0.04, 0.08];
 
 let state = {};
 let LANG = 'ja';
@@ -637,7 +644,7 @@ const I18N = {
     hold_line: '保有 {n}口 ・ {val} ・ {pl}', card_note: '{ex} ・ 配当{y}%',
     b_hot: '🔥過熱', b_cheap: '💎割安', b_roe: '📈高ROE',
     fx_weak: '▲円安', fx_strong: '▼円高',
-    ls_fair: '理論', ls_ma25: '25日', ls_ma200: '200日', ch_fair: '理論株価 {v}', ch_ma: '200日線 {v}', ch_ma25: '25日線 {v}', ln_title: '表示', ln_fair: '理論株価', ln_ma25: '25日線', ln_ma200: '200日線', ch_vol: '出来高',
+    rg_1y: '1年', rg_3y: '3年', rg_all: '全期間', ch_span: '直近{m}か月', ch_fair: '理論株価 {v}', ch_ma: '200日線 {v}', ch_ma25: '25日線 {v}', ln_title: '表示', ln_fair: '理論株価', ln_ma25: '25日線', ln_ma200: '200日線', ch_vol: '出来高',
     ch_gap: '理論株価比 {g}% {verdict}', ch_ma_gap: '200日線比 {g}% {dir}', ch_up: '(上)', ch_down: '(下)',
     v_cheap: '💎割安', v_hot: '🔥過熱', v_fair: '適正圏', legend_cash: '現金',
     toast_good: '📈 {name} 大型受注・新技術でEPS増益', toast_hot: '🔥 {name} 期待先行で過熱買い殺到',
@@ -668,10 +675,10 @@ const I18N = {
     tip_fx_JPY: '1ドルが何円か。数字が大きいほど円安。米国のETFは円建てなので、円安で有利・円高で不利になります',
     tip_fx_USD: '1ドルが何円か。数字が大きいほど円安。日本総合ETFは円建てなので、円安だとドルでの価値が下がります',
     sens_us_JPY: ' — {desc}（追い風: 好景気・円安 ／ 逆風: 不景気・円高）', sens_us_USD: ' — {desc}（追い風: 好景気 ／ 逆風: 不景気）',
-    desc_us_JPY: '米国の11業種をまとめた総合ETF（S&P500風。情報技術が約3割）。円建て・為替ヘッジなし',
-    desc_us_USD: '米国の11業種をまとめた総合ETF（S&P500風。情報技術が約3割）。ドル建てなので為替の影響なし',
-    desc_jp_JPY: '日本株全体の動き（日経平均風）。米国株とは別の動きをする時期もある',
-    desc_jp_USD: '日本株全体の動き（日経平均風）。円建てなので、円安だとドルでの価値が下がる',
+    desc_us_JPY: '米国株全体の動きを表す総合ETF（架空）。円建て・為替ヘッジなし',
+    desc_us_USD: '米国株全体の動きを表す総合ETF（架空）。ドル建てなので為替の影響なし',
+    desc_jp_JPY: '日本株全体の動きを表す総合ETF（架空）。米国株とは別の動きをする時期もある',
+    desc_jp_USD: '日本株全体の動きを表す総合ETF（架空）。円建てなので、円安だとドルでの価値が下がる',
     fig3_price: '株価', fig3_fair: '理論株価', fig3_ma: '200日線', fig3_vol: '出来高', fig3_cheap: 'お得', fig3_exp: '割高',
     fig4_salary: '給与 {v}', fig4_living: '生活費', fig4_forced: '強制売却', fig4_y: '{n}年',
   },
@@ -696,7 +703,7 @@ const I18N = {
     hold_line: 'Held {n} sh · {val} · {pl}', card_note: '{ex} · Div. {y}%',
     b_hot: '🔥Hot', b_cheap: '💎Cheap', b_roe: '📈High ROE',
     fx_weak: '▲Weak ¥', fx_strong: '▼Strong ¥',
-    ls_fair: 'Fair', ls_ma25: '25D', ls_ma200: '200D', ch_fair: 'Fair value {v}', ch_ma: '200-day MA {v}', ch_ma25: '25-day MA {v}', ln_title: 'Show', ln_fair: 'Fair value', ln_ma25: '25-day MA', ln_ma200: '200-day MA', ch_vol: 'Volume',
+    rg_1y: '1Y', rg_3y: '3Y', rg_all: 'All', ch_span: 'Last {m} mo', ch_fair: 'Fair value {v}', ch_ma: '200-day MA {v}', ch_ma25: '25-day MA {v}', ln_title: 'Show', ln_fair: 'Fair value', ln_ma25: '25-day MA', ln_ma200: '200-day MA', ch_vol: 'Volume',
     ch_gap: 'vs fair value {g}% {verdict}', ch_ma_gap: 'vs 200-day MA {g}% {dir}', ch_up: '(above)', ch_down: '(below)',
     v_cheap: '💎Cheap', v_hot: '🔥Hot', v_fair: 'Fair range', legend_cash: 'Cash',
     toast_good: '📈 {name}: big orders and new tech lift EPS', toast_hot: '🔥 {name}: hype triggers a buying frenzy',
@@ -727,10 +734,10 @@ const I18N = {
     tip_fx_JPY: 'Yen per dollar. A higher number means a weaker yen. US ETFs are priced in yen here, so a weaker yen helps them and a stronger yen hurts.',
     tip_fx_USD: 'Yen per dollar. A higher number means a weaker yen. The Japan Total ETF is yen-based, so a weaker yen lowers its dollar value.',
     sens_us_JPY: ' — {desc} (Tailwinds: Boom, weak yen / Headwinds: Recession, strong yen)', sens_us_USD: ' — {desc} (Tailwinds: Boom / Headwinds: Recession)',
-    desc_us_JPY: 'A total-market ETF blending the 11 US sectors (S&P 500-like; Technology is about 30%). Priced in yen with no currency hedge.',
-    desc_us_USD: 'A total-market ETF blending the 11 US sectors (S&P 500-like; Technology is about 30%). Priced in dollars, so there is no FX effect for you.',
-    desc_jp_JPY: 'Tracks the Japanese stock market (Nikkei-style). It sometimes moves differently from US stocks.',
-    desc_jp_USD: 'Tracks the Japanese stock market (Nikkei-style). It is priced in yen, so a weaker yen lowers its dollar value. It sometimes moves differently from US stocks.',
+    desc_us_JPY: 'A composite ETF tracking the US stock market (fictional). Priced in yen with no currency hedge.',
+    desc_us_USD: 'A composite ETF tracking the US stock market (fictional). Priced in dollars, so there is no FX effect for you.',
+    desc_jp_JPY: 'A composite ETF tracking the Japanese stock market (fictional). It sometimes moves differently from US stocks.',
+    desc_jp_USD: 'A composite ETF tracking the Japanese stock market (fictional). It is priced in yen, so a weaker yen lowers its dollar value. It sometimes moves differently from US stocks.',
     fig3_price: 'Price', fig3_fair: 'Fair value', fig3_ma: '200-day MA', fig3_vol: 'Volume', fig3_cheap: 'Cheap', fig3_exp: 'Expensive',
     fig4_salary: 'Salary {v}', fig4_living: 'Living cost', fig4_forced: 'Forced sale', fig4_y: 'Y{n}',
   }
@@ -749,19 +756,18 @@ function t(key, vars) {
 const L = (x) => (x && typeof x === 'object') ? (x[activeLang()] ?? x.ja) : x;
 
 const EN_INFO = {
-  0:  { name: 'Technology',          ex: 'Software, chips',       desc: 'Software, semiconductors and IT hardware. Fast growth means big swings, and it is weak when interest rates rise.' },
-  1:  { name: 'Health Care',         ex: 'Drugs, med devices',    desc: 'Pharmaceuticals, medical devices and hospitals. A defensive sector that holds up when the economy slows.' },
-  2:  { name: 'Financials',          ex: 'Banks, insurers',       desc: 'Banks, insurers and brokers. Profits tend to rise with interest rates; weak in a recession.' },
-  3:  { name: 'Cons. Discretionary', ex: 'Autos, e-commerce, travel', desc: 'Things people buy when times are good: cars, online shopping, restaurants, travel.' },
-  4:  { name: 'Cons. Staples',       ex: 'Food, household goods', desc: 'Food, drinks, household goods and groceries. Sells even in a recession — a calm, defensive sector.' },
-  5:  { name: 'Industrials',         ex: 'Machinery, aerospace',  desc: 'Factory machinery, construction equipment, aircraft, defense and logistics — what companies buy to invest. Sensitive to the economy.' },
-  6:  { name: 'Energy',              ex: 'Oil & gas',             desc: 'Oil and natural gas production and refining. Swings hard with oil prices and inflation, and moves differently from Japanese stocks.' },
-  7:  { name: 'Materials',           ex: 'Chemicals, metals, mining', desc: 'Chemicals, steel, metals, mining and paper — the raw materials of everything. Sensitive to the economy and inflation.' },
-  8:  { name: 'Utilities',           ex: 'Power, gas, water',     desc: 'Electricity, gas and water companies. A defensive sector that is weak when interest rates rise.' },
-  9:  { name: 'Real Estate',         ex: 'REITs, property',       desc: 'Property companies and REITs holding offices, malls and housing. Especially weak when interest rates rise.' },
-  10: { name: 'Comm. Services',      ex: 'Telecom, social, video', desc: 'Telecoms, social media, streaming, games and advertising — companies that deliver information and entertainment.' },
-  11: { name: 'US Total ETF',        ex: 'Blend of 11 sectors',   desc: 'A total-market ETF blending the 11 US sectors (S&P 500-like; Technology is about 30%). Priced in dollars, so there is no FX effect for you.' },
-  12: { name: 'Japan Total ETF',     ex: 'Nikkei-style',          desc: 'Tracks the Japanese stock market (Nikkei-style). It is priced in yen, so a weaker yen lowers its dollar value. It sometimes moves differently from US stocks.' }
+  0:  { name: 'Semis & AI',          ex: 'Chips, software, AI',   desc: 'Semiconductors, software and AI. Fast growth means big swings, and it is weak when interest rates rise.' },
+  1:  { name: 'Banks & Finance',     ex: 'Banks, insurers',       desc: 'Banks, insurers and brokers. Profits tend to rise with interest rates; weak in a recession.' },
+  2:  { name: 'Autos & Transport',   ex: 'Autos, rail, logistics', desc: 'Automakers, railways, shipping and logistics. Grows with the economy; weak when oil prices rise or in a recession.' },
+  3:  { name: 'Resources & Energy', ex: 'Oil, gas, metals, mining', desc: 'Oil, natural gas, metals and mining. Strong when inflation or oil prices rise, and sometimes moves differently from Japanese stocks.' },
+  4:  { name: 'Pharma & Medical',    ex: 'Drugs, med devices',    desc: 'Pharmaceuticals, medical devices and hospitals. A defensive sector that holds up when the economy slows.' },
+  5:  { name: 'Food & Daily Goods',  ex: 'Food, household goods', desc: 'Food, drinks, household goods and groceries. Sells even in a recession — a calm, defensive sector.' },
+  6:  { name: 'Retail & E-commerce', ex: 'Stores, online, travel', desc: 'Stores, online shopping, restaurants and travel — things people buy when times are good.' },
+  7:  { name: 'Power & Utilities',   ex: 'Power, gas, water, telecom', desc: 'Electricity, gas, water and telecom infrastructure. A defensive sector that is weak when interest rates rise.' },
+  8:  { name: 'Real Estate & Construction', ex: 'REITs, property, builders', desc: 'Property companies, REITs and builders. Especially weak when interest rates rise.' },
+  9:  { name: 'Entertainment & IP',  ex: 'Games, anime, music',   desc: 'Games, anime, film and music — companies that earn from characters and works (IP). Trend-driven, so prices swing a lot.' },
+  10: { name: 'US Total ETF',        ex: 'Blend of US stocks',   desc: 'A composite ETF tracking the US stock market (fictional). Priced in dollars, so there is no FX effect for you.' },
+  11: { name: 'Japan Total ETF',     ex: 'Large Japanese companies',          desc: 'A composite ETF tracking the Japanese stock market (fictional). It is priced in yen, so a weaker yen lowers its dollar value. It sometimes moves differently from US stocks.' }
 };
 
 function fmtYen(v) {
@@ -787,7 +793,7 @@ const MEAN_REV = 0.018;
 const EARN_KEEP = 0.45;
 const SECTOR_DRIFT = 0.004;
 const TICKS_PER_MONTH = MS_PER_MONTH / TICK_MS;
-const HIST_LEN = 200;
+const HIST_LEN = 1100;   // 全期間表示用（10年=960ティック＋助走）
 const VIEW_TICKS = 96;
 const MA_LONG = 80;
 const MA_SHORT = 10;
@@ -1084,17 +1090,16 @@ function bgmTick() {
 const SECTOR_COLORS = ['#00e5ff', '#ffab00', '#ff4081', '#00e676', '#b388ff', '#ff8a65', '#64ffda', '#ffd740', '#82b1ff', '#f48fb1', '#9ccc65', '#40c4ff', '#ffcc80'];
 const SECTOR_ICONS = [
   '<rect x="20" y="20" width="24" height="24" rx="3"/><rect x="27" y="27" width="10" height="10"/><path d="M26 20v-9M32 20v-9M38 20v-9M26 44v9M32 44v9M38 44v9M20 26h-9M20 32h-9M20 38h-9M44 26h9M44 32h9M44 38h9"/>',
-  '<rect x="12" y="25" width="40" height="14" rx="7" transform="rotate(-35 32 32)"/><path d="M28 26.3 36 37.7"/>',
   '<path d="M8 24 32 10l24 14z"/><path d="M14 28v22M26 28v22M38 28v22M50 28v22M8 54h48"/>',
-  '<path d="M6 12h9l6 26h30l5-20H17"/><circle cx="24" cy="48" r="4"/><circle cx="46" cy="48" r="4"/>',
-  '<path d="M8 30h48c0 13-10 22-24 22S8 43 8 30z"/><path d="M20 20c-3-4 3-6 0-10M32 20c-3-4 3-6 0-10M44 20c-3-4 3-6 0-10"/>',
-  '<circle cx="32" cy="32" r="8"/><circle cx="32" cy="32" r="17"/><path d="M32 8v7M32 49v7M8 32h7M49 32h7M15 15l5 5M44 44l5 5M15 49l5-5M44 20l5-5"/>',
-  '<path d="M32 8C24 22 16 30 16 40a16 16 0 0 0 32 0c0-10-8-18-16-32z"/>',
+  '<path d="M8 38l6-14h36l6 14v12H8z"/><path d="M14 38h36"/><circle cx="20" cy="50" r="5"/><circle cx="44" cy="50" r="5"/>',
   '<path d="M18 14h28l10 14-24 26L8 28z"/><path d="M8 28h48M24 14l-4 14 12 26 12-26-4-14"/>',
+  '<rect x="12" y="25" width="40" height="14" rx="7" transform="rotate(-35 32 32)"/><path d="M28 26.3 36 37.7"/>',
+  '<path d="M8 30h48c0 13-10 22-24 22S8 43 8 30z"/><path d="M20 20c-3-4 3-6 0-10M32 20c-3-4 3-6 0-10M44 20c-3-4 3-6 0-10"/>',
+  '<path d="M6 12h9l6 26h30l5-20H17"/><circle cx="24" cy="48" r="4"/><circle cx="46" cy="48" r="4"/>',
   '<path d="M36 6 14 36h14l-4 22 26-32H36z"/>',
   '<rect x="12" y="12" width="24" height="42"/><rect x="36" y="28" width="16" height="26"/><path d="M18 20h4M26 20h4M18 28h4M26 28h4M18 36h4M26 36h4M42 36h4M42 44h4M8 54h48"/>',
-  '<circle cx="32" cy="38" r="4"/><path d="M20 38a12 12 0 0 1 12-12 12 12 0 0 1 12 12M12 38a20 20 0 0 1 20-20 20 20 0 0 1 20 20"/><path d="M32 42v14"/>',
   '<path d="M32 8l7.4 15.6 17 2.2-12.5 11.9 3.2 16.9L32 46l-15.1 8.6 3.2-16.9L7.6 25.8l17-2.2z"/>',
+  '<circle cx="32" cy="32" r="22"/><path d="M10 32h44M32 10c-10 12-10 32 0 44M32 10c10 12 10 32 0 44"/>',
   '<circle cx="32" cy="32" r="14"/><circle cx="32" cy="32" r="24"/>'
 ];
 
@@ -1233,14 +1238,14 @@ function applyShock(s, mutate, share = DF().lagShare) {
   s.lagMult = Math.max(0.5, Math.min(2.0, s.lagMult * Math.pow(F, -share)));
 }
 
-const PRICE_NEWS = { pos: { label: { ja: '物価高', en: 'Inflation' }, text: { ja: '物価高が加速', en: 'Inflation accelerates' }, fx: { 6: 1.5, 7: 0.8, 3: -1.0, 9: -1.0 } }, neg: { label: { ja: '物価一服', en: 'Inflation eases' }, text: { ja: '物価高が一服', en: 'Inflation cools' } } };
+const PRICE_NEWS = { pos: { label: { ja: '物価高', en: 'Inflation' }, text: { ja: '物価高が加速', en: 'Inflation accelerates' }, fx: { 3: 1.5, 2: -0.6, 6: -1.0, 8: -1.0 } }, neg: { label: { ja: '物価一服', en: 'Inflation eases' }, text: { ja: '物価高が一服', en: 'Inflation cools' } } };
 const NEWS_POOL = [
   { fxMove: 8, note: { JPY: { ja: '米国ETFは円建てで増減', en: 'US ETFs move in yen terms' }, USD: { ja: '日本総合ETFのドル価値は逆に動く', en: 'Japan ETF’s USD value moves the other way' } },
-    pos: { label: { ja: '円安', en: 'Weak yen' }, text: { ja: '円安が進む', en: 'The yen weakens' }, fx: { 12: 0.8 } }, neg: { label: { ja: '円高', en: 'Strong yen' }, text: { ja: '円高が進む', en: 'The yen strengthens' } } },
+    pos: { label: { ja: '円安', en: 'Weak yen' }, text: { ja: '円安が進む', en: 'The yen weakens' }, fx: { 11: 0.8 } }, neg: { label: { ja: '円高', en: 'Strong yen' }, text: { ja: '円高が進む', en: 'The yen strengthens' } } },
   { fxMove: 4,
-    pos: { label: { ja: '利上げ', en: 'Rate hike' }, text: { ja: '米国が利上げ', en: 'The Fed raises rates' }, fx: { 2: 1.2, 9: -1.5, 8: -1.0, 0: -0.8 } }, neg: { label: { ja: '利下げ', en: 'Rate cut' }, text: { ja: '米国が利下げ', en: 'The Fed cuts rates' } } },
-  { pos: { label: { ja: '原油高', en: 'Oil up' }, text: { ja: '原油価格が高騰', en: 'Oil prices surge' }, fx: { 6: 1.6, 7: 0.5, 3: -0.8, 5: -0.6 } }, neg: { label: { ja: '原油安', en: 'Oil down' }, text: { ja: '原油価格が下落', en: 'Oil prices fall' } } },
-  { pos: { label: { ja: '好景気', en: 'Boom' }, text: { ja: '景気が拡大', en: 'The economy expands' }, fx: { 3: 1.1, 5: 1.0, 2: 0.9, 7: 0.9, 0: 0.8, 12: 0.7, 6: 0.6, 4: -0.5, 8: -0.5, 1: -0.4 } }, neg: { label: { ja: '不景気', en: 'Recession' }, text: { ja: '景気が後退', en: 'The economy contracts' } } }
+    pos: { label: { ja: '利上げ', en: 'Rate hike' }, text: { ja: '米国が利上げ', en: 'The Fed raises rates' }, fx: { 1: 1.2, 8: -1.5, 7: -1.0, 0: -0.8 } }, neg: { label: { ja: '利下げ', en: 'Rate cut' }, text: { ja: '米国が利下げ', en: 'The Fed cuts rates' } } },
+  { pos: { label: { ja: '原油高', en: 'Oil up' }, text: { ja: '原油価格が高騰', en: 'Oil prices surge' }, fx: { 3: 1.6, 2: -0.8 } }, neg: { label: { ja: '原油安', en: 'Oil down' }, text: { ja: '原油価格が下落', en: 'Oil prices fall' } } },
+  { pos: { label: { ja: '好景気', en: 'Boom' }, text: { ja: '景気が拡大', en: 'The economy expands' }, fx: { 2: 1.1, 6: 1.0, 1: 0.9, 3: 0.9, 0: 0.8, 11: 0.7, 9: 0.6, 5: -0.5, 7: -0.5, 4: -0.4 } }, neg: { label: { ja: '不景気', en: 'Recession' }, text: { ja: '景気が後退', en: 'The economy contracts' } } }
 ];
 function newsEffects(ev, sign) {
   const base = ev.pos.fx;
@@ -1280,30 +1285,30 @@ function pickFxTrend() {
 
 const SCENARIOS = [
   { id: 'japan', name: { ja: '日本バブル崩壊', en: 'Japan bubble burst' }, run: 12, peak: [1.24, 1.30], start: [15, 36], fall: [20, 28], trough: [0.52, 0.60], rec: [40, 52], ease: false,
-    defaultBeta: 0, beta: { 12: 1.0 },
+    defaultBeta: 0, beta: { 11: 1.0 },
     text: { run: { ja: '🔥 日本株が過熱気味：国内だけ好景気ムードで割高圏に', en: '🔥 Japanese stocks look overheated: a domestic-only boom pushes them into expensive territory' },
             warn: { ja: '⚠️ 識者が「日本株はバブルでは」と警告', en: '⚠️ Experts warn: "Japan’s market may be a bubble"' },
             crash: { ja: '📉 日本バブル崩壊：日本株が全面安（米国株は影響小）', en: '📉 Japan’s bubble bursts: Japanese stocks plunge (US stocks barely affected)' },
             rec: { ja: '🩹 日本株の売りが一巡、長い調整局面へ', en: '🩹 Selling in Japan subsides — a long adjustment lies ahead' } } },
   { id: 'it', name: { ja: 'ITバブル崩壊', en: 'Dot-com bust' }, run: 12, peak: [1.16, 1.22], start: [18, 54], fall: [18, 26], trough: [0.62, 0.70], rec: [30, 42], ease: false, fxShift: 6,
-    beta: { 0: 2.0, 10: 1.3, 3: 1.0, 5: 0.9, 2: 0.8, 7: 0.8, 9: 0.6, 6: 0.4, 8: 0.4, 1: 0.3, 4: 0.2, 12: 1.0 },
-    text: { run: { ja: '🔥 ハイテク株が過熱気味：新技術への期待で割高圏に', en: '🔥 Tech stocks look overheated: hopes for new technology push them to expensive levels' },
+    beta: { 0: 2.0, 9: 1.3, 6: 1.0, 2: 0.9, 1: 0.8, 3: 0.8, 8: 0.6, 7: 0.4, 4: 0.3, 5: 0.2, 11: 1.0 },
+    text: { run: { ja: '🔥 半導体・AI株が過熱気味：新技術への期待で割高圏に', en: '🔥 Semis & AI stocks look overheated: hopes for new technology push them to expensive levels' },
             warn: { ja: '⚠️ 識者が「ITバブルでは」と警告', en: '⚠️ Experts warn: "This looks like a tech bubble"' },
-            crash: { ja: '📉 ITバブル崩壊：情報技術が急落（守りの業種は影響小）', en: '📉 Dot-com bust: Technology plunges (defensive sectors barely affected)' },
-            rec: { ja: '🩹 ハイテク株の売りが一巡', en: '🩹 Tech selling subsides' } } },
+            crash: { ja: '📉 ITバブル崩壊：半導体・AIが急落（守りの業種は影響小）', en: '📉 Dot-com bust: Semis & AI plunge (defensive sectors barely affected)' },
+            rec: { ja: '🩹 半導体・AI株の売りが一巡', en: '🩹 Semis & AI selling subsides' } } },
   { id: 'lehman', name: { ja: '金融危機', en: 'Financial crisis' }, run: 0, peak: [1, 1], start: [24, 60], fall: [14, 18], trough: [0.55, 0.62], rec: [30, 42], ease: false, fxShift: -24,
-    beta: { 2: 1.6, 9: 1.4, 3: 1.3, 5: 1.3, 7: 1.3, 6: 1.2, 0: 1.2, 10: 0.9, 1: 0.5, 4: 0.5, 8: 0.6, 12: 1.1 },
+    beta: { 1: 1.6, 8: 1.4, 6: 1.3, 2: 1.3, 3: 1.25, 0: 1.2, 9: 0.9, 4: 0.5, 5: 0.5, 7: 0.6, 11: 1.1 },
     text: { warn: { ja: '⚠️ 金融不安がくすぶり始める', en: '⚠️ Financial stress starts to simmer' },
-            crash: { ja: '📉 金融危機：金融・不動産を中心に世界同時株安、急激な円高', en: '📉 Financial crisis: global stock crash led by financials and real estate, with a sharp surge in the yen' },
+            crash: { ja: '📉 金融危機：銀行・金融と不動産・建設を中心に世界同時株安、急激な円高', en: '📉 Financial crisis: global stock crash led by financials and real estate, with a sharp surge in the yen' },
             rec: { ja: '🩹 各国の対策で市場が落ち着きを取り戻す', en: '🩹 Government measures calm the markets' } } },
   { id: 'covid', name: { ja: 'パンデミック急落', en: 'Pandemic crash' }, run: 0, peak: [1, 1], start: [18, 84], fall: [1, 2], trough: [0.68, 0.75], rec: [6, 10], ease: true, fxShift: -5,
-    beta: { 6: 1.5, 3: 1.3, 5: 1.3, 9: 1.2, 2: 1.1, 7: 1.0, 0: 0.7, 10: 0.6, 8: 0.6, 4: 0.4, 1: -0.1, 12: 1.0 },
-    text: { crash: { ja: '⚡ パンデミックで世界的に株価が急落（ヘルスケアは逆行高）', en: '⚡ A pandemic sparks a global stock crash (Health Care moves against the trend)' },
+    beta: { 3: 1.25, 6: 1.3, 2: 1.3, 8: 1.2, 1: 1.1, 0: 0.7, 9: 0.9, 7: 0.6, 5: 0.4, 4: -0.1, 11: 1.0 },
+    text: { crash: { ja: '⚡ パンデミックで世界的に株価が急落（医薬品・医療は逆行高）', en: '⚡ A pandemic sparks a global stock crash (Pharma & Medical moves against the trend)' },
             rec: { ja: '🩹 経済対策で急回復、市場に落ち着き', en: '🩹 Stimulus triggers a rapid rebound; markets settle' } } },
   { id: 'rate', name: { ja: 'インフレ・利上げ局面', en: 'Inflation & rate hikes' }, run: 0, peak: [1, 1], start: [24, 72], fall: [9, 12], trough: [0.78, 0.84], rec: [12, 18], ease: false, fxShift: 22,
-    beta: { 0: 1.6, 9: 1.4, 3: 1.3, 10: 1.3, 8: 0.9, 5: 0.8, 1: 0.6, 4: 0.5, 7: 0.3, 2: -0.2, 6: -0.8, 12: 0.9 },
+    beta: { 0: 1.6, 8: 1.4, 6: 1.3, 9: 1.3, 7: 0.9, 2: 0.8, 4: 0.6, 5: 0.5, 3: -0.5, 1: -0.2, 11: 0.9 },
     text: { warn: { ja: '⚠️ インフレが加速、各国で利上げ観測が強まる', en: '⚠️ Inflation accelerates; rate-hike expectations grow worldwide' },
-            crash: { ja: '📉 急速な利上げで成長株が総崩れ（エネルギー・金融は逆行高、円安が進行）', en: '📉 Rapid rate hikes hammer growth stocks (Energy and Financials rise; the yen weakens)' },
+            crash: { ja: '📉 急速な利上げで成長株が総崩れ（資源・エネルギーと銀行・金融は逆行高、円安が進行）', en: '📉 Rapid rate hikes hammer growth stocks (Resources & Energy and Banks rise; the yen weakens)' },
             rec: { ja: '🩹 利上げの織り込みが進み、市場が落ち着く', en: '🩹 Rate hikes get priced in; markets calm down' } } }
 ];
 function pickCrash() {
@@ -1355,7 +1360,7 @@ function initGame() {
     month: 0,
     nextIsPrice: Math.random() < 0.5,
     slot1: 0,
-    slot2: 1,
+    slot2: 4,
     activeId: 0,
     sectors: SECTORS_INIT.map(s => ({
       ...s,
@@ -1405,7 +1410,7 @@ function populateSelectors() {
 
 function buildSectorGrid() {
   const grid = document.getElementById('sector-grid');
-  const order = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, null, 12, 11];
+  const order = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
   grid.innerHTML = order.map(id => {
     if (id === null) return '<div class="sec-blank"></div>';
     const s = state.sectors[id];
@@ -1878,8 +1883,8 @@ function drawCanvas() {
   ctx.fillRect(0, 0, w, h);
 
   const halfW = w / 2;
-  drawChartSlot(ctx, state.sectors[state.slot1], 0, 0, halfW, h);
-  drawChartSlot(ctx, state.sectors[state.slot2], halfW, 0, halfW, h);
+  drawChartSlot(ctx, state.sectors[state.slot1], 0, 0, halfW, h, CHART_RANGES[0]);
+  drawChartSlot(ctx, state.sectors[state.slot2], halfW, 0, halfW, h, CHART_RANGES[1]);
 
   ctx.strokeStyle = '#263042';
   ctx.lineWidth = 2;
@@ -1891,8 +1896,8 @@ function drawCanvas() {
   drawAssetChart();
 }
 
-function drawChartSlot(ctx, sec, ox, oy, w, h) {
-  const padT = 40, padB = 14, padL = 12, padR = 92;
+function drawChartSlot(ctx, sec, ox, oy, w, h, rg) {
+  const padT = 40, padB = 14, padL = 12, padR = 58;
   const cw = w - padL - padR;
   const ch = h - padT - padB;
   const volH = Math.max(28, Math.round(ch * 0.22));
@@ -1900,18 +1905,21 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
   const chP = ch - volH - gapV;
 
   const H = sec.history, FH = sec.fairHistory, VH = sec.volHistory;
-  const n = Math.min(VIEW_TICKS, H.length);
+  const wantN = rg === 'all' ? Math.max(VIEW_TICKS, state.ticks + 1) : RANGE_TICKS[rg];
+  const n = Math.min(wantN, H.length);
   const off = H.length - n;
   const hs = H.slice(off), fs = FH.slice(off), vs = VH.slice(off);
+  const P = [0];
+  for (let k = 0; k < H.length; k++) P.push(P[k] + H[k]);
   const maOf = (len) => hs.map((_, j) => {
-    let sum = 0, c = 0;
-    for (let k = Math.max(0, off + j - len + 1); k <= off + j; k++) { sum += H[k]; c++; }
-    return sum / c;
+    const e = off + j, st = Math.max(0, e - len + 1);
+    return (P[e + 1] - P[st]) / (e - st + 1);
   });
+  const show25 = LINES.ma25 && rg !== 'all';
   const ma = maOf(MA_LONG), ma25 = maOf(MA_SHORT);
 
   const extraVals = sec.shares > 0 ? [sec.avgCost] : [];
-  const allVals = hs.concat(LINES.fair ? fs : [], LINES.ma200 ? ma : [], LINES.ma25 ? ma25 : [], extraVals);
+  const allVals = hs.concat(LINES.fair ? fs : [], LINES.ma200 ? ma : [], show25 ? ma25 : [], extraVals);
   const minV = Math.min(...allVals) * 0.94;
   const maxV = Math.max(...allVals) * 1.06;
   const range = Math.max(1, maxV - minV);
@@ -1962,7 +1970,7 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
     polyline(ma);
     ctx.stroke();
   }
-  if (LINES.ma25) {
+  if (show25) {
     ctx.strokeStyle = '#4fc3f7';
     ctx.lineWidth = 1.3;
     ctx.beginPath();
@@ -1970,22 +1978,11 @@ function drawChartSlot(ctx, sec, ox, oy, w, h) {
     ctx.stroke();
   }
 
-  const fairNow = fs[n - 1], maNow = ma[n - 1], ma25Now = ma25[n - 1];
-  const lo = oy + padT + 10, hi = oy + padT + chP - 2;
-  const endLabels = [];
-  if (LINES.fair) endLabels.push({ y: toY(fairNow), text: t('ls_fair'), color: '#ffd54f' });
-  if (LINES.ma200) endLabels.push({ y: toY(maNow), text: t('ls_ma200'), color: '#c9b3ff' });
-  if (LINES.ma25) endLabels.push({ y: toY(ma25Now), text: t('ls_ma25'), color: '#81d4fa' });
-  endLabels.forEach(o => { o.ly = o.y + 4; });
-  endLabels.sort((a, b) => a.ly - b.ly);
-  endLabels.forEach((o, i) => { o.ly = Math.max(lo, o.ly); if (i > 0) o.ly = Math.max(o.ly, endLabels[i - 1].ly + 12); });
-  for (let i = endLabels.length - 1; i >= 0; i--) {
-    const cap = i === endLabels.length - 1 ? hi : endLabels[i + 1].ly - 12;
-    if (endLabels[i].ly > cap) endLabels[i].ly = cap;
-  }
-  ctx.font = 'bold 10px monospace';
+  const fairNow = fs[n - 1], maNow = ma[n - 1];
+  ctx.fillStyle = '#5d6b82';
+  ctx.font = '10px monospace';
   ctx.textAlign = 'left';
-  endLabels.forEach(o => { ctx.fillStyle = o.color; ctx.fillText(o.text, ox + padL + cw + 52, o.ly); });
+  ctx.fillText(t('ch_span', { m: Math.round(n / 8) }), ox + padL + 4, oy + h - 3);
 
   if (sec.shares > 0) {
     const avgY = toY(sec.avgCost);
@@ -2117,6 +2114,8 @@ let lastResult = { title: '', html: '' };
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 const LINES = (() => { let o = {}; try { o = JSON.parse(lsGet('st_lines2') || '{}') || {}; } catch (e) {} return { fair: o.fair !== false, ma25: o.ma25 !== false, ma200: o.ma200 !== false }; })();
+const CHART_RANGES = [1, 2].map(n => { const v = lsGet('st_range' + n) || lsGet('st_range'); return (v === '3y' || v === 'all') ? v : '1y'; });
+const RANGE_TICKS = { '1y': 96, '3y': 288 };
 function currentSettings() { return { lang: LANG, cur: HOME, diff: DIFF }; }
 function saveSettings() {
   lsSet('st_settings', JSON.stringify(currentSettings()));
@@ -2296,9 +2295,19 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && modalMode === 'settings') { closeSettings(); return; }
   if ((e.key === 'm' || e.key === 'M') && !e.repeat) toggleMute();
 });
-function refreshLineToggles() { document.querySelectorAll('[data-line]').forEach(el => el.classList.toggle('on', !!LINES[el.getAttribute('data-line')])); }
+function refreshLineToggles() {
+  document.querySelectorAll('[data-line]').forEach(el => {
+    const k = el.getAttribute('data-line');
+    el.classList.toggle('on', !!LINES[k]);
+    el.classList.toggle('dis', k === 'ma25' && CHART_RANGES.every(r => r === 'all'));
+  });
+  document.querySelectorAll('[data-range]').forEach(el => el.classList.toggle('on', el.getAttribute('data-range') === CHART_RANGES[+el.getAttribute('data-slot')]));
+}
 document.querySelectorAll('[data-line]').forEach(el => {
-  el.onclick = () => { const k = el.getAttribute('data-line'); LINES[k] = !LINES[k]; lsSet('st_lines2', JSON.stringify(LINES)); refreshLineToggles(); drawCanvas(); };
+  el.onclick = () => { const k = el.getAttribute('data-line'); if (k === 'ma25' && CHART_RANGES.every(r => r === 'all')) return; LINES[k] = !LINES[k]; lsSet('st_lines2', JSON.stringify(LINES)); refreshLineToggles(); drawCanvas(); };
+});
+document.querySelectorAll('[data-range]').forEach(el => {
+  el.onclick = () => { const sl = +el.getAttribute('data-slot'); CHART_RANGES[sl] = el.getAttribute('data-range'); lsSet('st_range' + (sl + 1), CHART_RANGES[sl]); refreshLineToggles(); drawCanvas(); };
 });
 refreshLineToggles();
 window.addEventListener('resize', () => { fitStage(); drawCanvas(); drawAssetChart(); });
