@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SECTOR TERMINAL</title>
+<title>SECTOR TRADER</title>
 <style>
   :root {
     --bg: #0a0d12;
@@ -475,7 +475,8 @@
   .lang-btn.on { border-color: var(--cyan); color: var(--cyan); font-weight: bold; }
   .set-row { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 8px; }
   .set-label { width: 88px; font-size: 12px; color: var(--muted); text-align: right; }
-  .seg { display: flex; gap: 6px; }
+  .seg { display: flex; gap: 6px; width: 256px; }
+  .seg .lang-btn { flex: 1; min-width: 0; padding: 5px 4px; }
   .btn-row { display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; }
   .sub-btn { background: var(--panel-alt); border: 1px solid var(--border); color: var(--text); font-family: var(--font); font-size: 13px; padding: 9px 16px; cursor: pointer; }
   .sub-btn:hover { border-color: var(--muted); }
@@ -597,7 +598,7 @@
 
 <div id="overlay">
   <div class="modal">
-    <h1 id="modal-title">SECTOR TERMINAL</h1>
+    <h1 id="modal-title">SECTOR TRADER</h1>
     <div id="settings-box">
       <div class="set-row"><span class="set-label" data-i18n="set_lang">言語</span><span class="seg"><button class="lang-btn on" data-set="lang" data-val="ja">日本語</button><button class="lang-btn" data-set="lang" data-val="en">English</button></span></div>
       <div class="set-row"><span class="set-label" data-i18n="set_cur">通貨</span><span class="seg"><button class="lang-btn on" data-set="cur" data-val="JPY" data-i18n="cur_jpy">円 (¥)</button><button class="lang-btn" data-set="cur" data-val="USD" data-i18n="cur_usd">ドル ($)</button></span></div>
@@ -2227,7 +2228,7 @@ function renderModal(mode) {
     $('btn-start').textContent = t('btn_apply');
     $('btn-cancel').textContent = t('btn_cancel');
   } else {
-    $('modal-title').textContent = 'SECTOR TERMINAL';
+    $('modal-title').textContent = 'SECTOR TRADER';
     $('btn-start').textContent = t('start');
   }
   $('disc-wrap').style.display = (mode === 'start') ? 'block' : 'none';
