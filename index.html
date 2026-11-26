@@ -491,6 +491,18 @@
     cursor: pointer;
   }
   .start-btn:hover { opacity: 0.9; }
+  .disc-wrap { margin-top: 14px; text-align: center; }
+  .disc-short { font-size: 10.5px; line-height: 1.6; color: var(--muted); }
+  .disc-wrap details { margin-top: 4px; }
+  .disc-wrap summary { font-size: 10.5px; color: var(--muted); cursor: pointer; text-decoration: underline; }
+  .disc-wrap summary:hover { color: var(--text); }
+  .vol-wrap { position: relative; flex-shrink: 0; }
+  .vol-panel { position: absolute; top: calc(100% + 6px); right: 0; z-index: 400; width: 240px; background: var(--panel); border: 1px solid var(--cyan); padding: 8px 12px; }
+  .vol-row { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); margin: 5px 0; }
+  .vol-row > span:first-child { width: 54px; }
+  .vol-row input[type=range] { flex: 1; min-width: 0; accent-color: var(--cyan); cursor: pointer; }
+  .vol-row .vv { width: 26px; text-align: right; color: var(--text); }
+  .disc-full { font-size: 10.5px !important; line-height: 1.7 !important; color: var(--muted) !important; text-align: left !important; margin: 8px 0 0 !important; }
 </style>
 </head>
 <body>
@@ -507,7 +519,7 @@
   </div>
   <div class="top-right">
     <button id="btn-settings" class="mute-btn" data-i18n-title="tip_settings" title="設定">⚙</button>
-    <button id="btn-bgm" class="mute-btn" data-i18n-title="bgm_title" title="BGM ON/OFF">🎵</button>
+    <div class="vol-wrap"><button id="btn-bgm" class="mute-btn" data-i18n-title="bgm_title" title="音量">🎵</button><div id="vol-panel" class="vol-panel" style="display:none;"><div class="vol-row"><span data-i18n="vol_bgm"></span><input type="range" id="vol-bgm" min="0" max="100" step="5"><span id="vol-bgm-v" class="vv"></span></div><div class="vol-row"><span data-i18n="vol_sfx"></span><input type="range" id="vol-sfx" min="0" max="100" step="5"><span id="vol-sfx-v" class="vv"></span></div></div></div>
     <button id="btn-mute" class="mute-btn" data-i18n-title="mute_title" title="効果音 ON/OFF（Mキー）">🔊</button>
     <div id="countdown-pill" class="countdown-pill" style="display:none;"></div>
   </div>
@@ -594,6 +606,10 @@
     </div>
     <p id="modal-desc" style="display:none"></p>
     <div class="btn-row"><button id="btn-cancel" class="sub-btn" style="display:none">キャンセル</button><button id="btn-start" class="start-btn">MARKET OPEN (START)</button></div>
+    <div id="disc-wrap" class="disc-wrap">
+      <div class="disc-short" data-i18n="disc_short"></div>
+      <details><summary data-i18n="disc_link"></summary><p class="disc-full" data-i18n="disc_full"></p></details>
+    </div>
   </div>
 </div>
 
@@ -628,7 +644,7 @@ const I18N = {
     tip_pnl: '総資産 − 元本。元本は「初期資金＋これまでの投資可能余剰の合計」です。配当も含みます。プラスなら、運用で増やせています',
     tip_flow: '毎月の給与 − 生活費（＝毎月投資できるお金）。物価のニュースで生活費が上がると減ります。現金が足りない月は、保有ETFが自動で売られます',
     tip_fx: '1ドルが何円か。数字が大きいほど円安。米国のETFは円建てなので、円安で有利・円高で不利になります',
-    mute_title: '効果音 ON/OFF（Mキー）', bgm_title: 'BGM ON/OFF', news_empty: '— ニュース待機中 —',
+    mute_title: '効果音 ON/OFF（Mキー）', bgm_title: '音量（BGM・効果音）', vol_bgm: 'BGM', vol_sfx: '効果音', news_empty: '— ニュース待機中 —',
     sec_title: 'ALL ETF (クリックで下段操作へ)', sec_legend: '🔥過熱 / 💎割安 / 📈高ROE',
     asset_title: '総資産の推移（白線）',
     asset_legend: '<i class="dash"></i>元本 <b style="color:var(--cyan)">･･積立(日本)</b> <b style="color:var(--magenta)">･･積立(米国)</b>',
@@ -662,8 +678,8 @@ const I18N = {
     r_flow: '最終の投資余剰: {flow}/月（生活費 {living}）／ 強制売却 {n}回', r_rank: '評価ランク',
     r_bankrupt: '生活費を賄えず、保有株をすべて売却しても現金がマイナスになりました。',
     c_big: '積立を大きく引き離しました。相場の波を読み切った10年です。', c_beat: '積立投資を上回りました。ニュースと値動きを味方にできた10年です。',
-    c_mid: '{worse}の積立には勝ちましたが、{better}の積立には届きませんでした。', c_even: '積立とほぼ互角でした。売買を重ねても、積立の堅さが際立つ結果です。',
-    c_lose: '積立の方が上でした。コツコツ続けること自体が強い武器だと分かる10年でした。', c_forced: ' 強制売却が多めでした。現金の余裕も戦略のうちです。',
+    c_mid: '{worse}の積立には勝ちましたが、{better}の積立には届きませんでした。', c_even: '積立とほぼ互角でした。このゲームの設定では、売買を重ねても積立の堅さが際立つ結果です。',
+    c_lose: '積立の方が上でした。今回の設定では、コツコツ続けることが強みになった10年でした。', c_forced: ' 強制売却が多めでした。現金の余裕も戦略のうちです。',
     play_again: 'PLAY AGAIN', start: 'MARKET OPEN (START)',
     diff_label: '難易度', diff_normal: 'ノーマル', diff_hard: 'ハード',
     diff_desc_normal: 'ノーマル：市場は穏やかで、生活費の上昇も緩やか。大きな下落は少なめ・浅め。ニュースの織り込みが遅く、先回りしやすい。',
@@ -681,13 +697,17 @@ const I18N = {
     desc_jp_USD: '日本株全体の動きを表す総合ETF（架空）。円建てなので、円安だとドルでの価値が下がる',
     fig3_price: '株価', fig3_fair: '理論株価', fig3_ma: '200日線', fig3_vol: '出来高', fig3_cheap: 'お得', fig3_exp: '割高',
     fig4_salary: '給与 {v}', fig4_living: '生活費', fig4_forced: '強制売却', fig4_y: '{n}年',
+    disc_short: '本ゲームは完全なフィクションです。実在の金融商品・企業とは無関係で、投資の推奨・助言ではありません。現実の投資判断はご自身の責任で行ってください。',
+    disc_link: '免責事項・ご利用にあたっての注意（全文）',
+    disc_full: '本ゲームはエンターテインメントおよび金融の仕組みに親しむことを目的とした完全なフィクションのシミュレーションです。ゲーム内に登場する「日本総合ETF」「米国総合ETF」および各業種ETF、株価、為替、経済指標、ニュース、財務数値（PER・PBR・ROE・配当利回り等）はすべてプログラム上の架空モデルであり、実在の金融商品・指数・企業とは関係ありません。なお、暴落シナリオなど過去の市場の出来事に着想を得た演出を含みますが、数値や展開は実際のものではありません。<br><br>また、本ゲームの演出や評価（割安・過熱・ランク判定等）は特定の投資手法や金融商品の売買を推奨・助言するものではなく、実際の市場における運用成果や再現性を保証するものではありません。現実の投資判断はご自身の責任において行ってください。',
+    disc_result: '※本結果はゲーム内の簡易モデルによるシミュレーション結果であり、実際の投資成果や特定の投資手法（積立投資・売買タイミング等）の優劣を保証するものではありません。',
   },
   en: {
     lbl_total: 'Net worth', lbl_cash: 'Cash', lbl_elapsed: 'Elapsed', lbl_pnl: 'Gain/Loss', lbl_flow: 'Monthly investable',
     tip_pnl: 'Net worth − principal. Principal = initial cash + cumulative monthly investable cash. Dividends count. Positive means your investing is adding value.',
     tip_flow: 'Monthly salary − living costs (= cash you can invest each month). Inflation news raises living costs. When cash runs short, holdings are sold automatically.',
     tip_fx: 'Yen per dollar. A higher number means a weaker yen. The Japan Total ETF is yen-based, so a weaker yen lowers its dollar value.',
-    mute_title: 'Sound ON/OFF (M key)', bgm_title: 'Music ON/OFF', news_empty: '— Waiting for news —',
+    mute_title: 'Sound ON/OFF (M key)', bgm_title: 'Volume (Music / Sound FX)', vol_bgm: 'Music', vol_sfx: 'Sound FX', news_empty: '— Waiting for news —',
     sec_title: 'ALL ETFs (click to trade below)', sec_legend: '🔥Hot / 💎Cheap / 📈High ROE',
     asset_title: 'Net worth over time (white)',
     asset_legend: '<i class="dash"></i>Principal <b style="color:var(--cyan)">･･DCA Japan</b> <b style="color:var(--magenta)">･･DCA US</b>',
@@ -721,8 +741,8 @@ const I18N = {
     r_flow: 'Final monthly investable: {flow}/mo (living cost {living}) / Forced sales: {n}', r_rank: 'Rank',
     r_bankrupt: 'You could not cover your living costs, and even after selling every holding your cash went negative.',
     c_big: 'You left DCA far behind — a decade of reading the market’s waves.', c_beat: 'You beat DCA. News and price action worked in your favor over the decade.',
-    c_mid: 'You beat the {worse} DCA but fell short of the {better} DCA.', c_even: 'About even with DCA. Despite all the trading, the steadiness of DCA stands out.',
-    c_lose: 'DCA came out ahead. A decade that shows how powerful simply sticking with it can be.', c_forced: ' There were quite a few forced sales — keeping a cash cushion is part of strategy.',
+    c_mid: 'You beat the {worse} DCA but fell short of the {better} DCA.', c_even: 'About even with DCA. In this game’s setup, DCA’s steadiness stands out despite all the trading.',
+    c_lose: 'DCA came out ahead. In this game’s setup, simply sticking with it paid off over the decade.', c_forced: ' There were quite a few forced sales — keeping a cash cushion is part of strategy.',
     play_again: 'PLAY AGAIN', start: 'MARKET OPEN (START)',
     diff_label: 'Difficulty', diff_normal: 'Normal', diff_hard: 'Hard',
     diff_desc_normal: 'Normal: calmer markets, slower growth in living costs, fewer and shallower crashes. News is priced in slowly, so it is easier to get ahead of it.',
@@ -740,6 +760,10 @@ const I18N = {
     desc_jp_USD: 'A composite ETF tracking the Japanese stock market (fictional). It is priced in yen, so a weaker yen lowers its dollar value. It sometimes moves differently from US stocks.',
     fig3_price: 'Price', fig3_fair: 'Fair value', fig3_ma: '200-day MA', fig3_vol: 'Volume', fig3_cheap: 'Cheap', fig3_exp: 'Expensive',
     fig4_salary: 'Salary {v}', fig4_living: 'Living cost', fig4_forced: 'Forced sale', fig4_y: 'Y{n}',
+    disc_short: 'This game is entirely fictional. It has no connection to any real financial product or company, and it is not investment advice or a recommendation. Make real investment decisions at your own responsibility.',
+    disc_link: 'Disclaimer and notes on use (full text)',
+    disc_full: 'This game is a purely fictional simulation made for entertainment and to help people get familiar with how financial markets work. The “Japan Total ETF,” “US Total ETF,” all sector ETFs, and every stock price, exchange rate, economic indicator, news item and financial figure (P/E, P/B, ROE, dividend yield, etc.) are fictional models created by the program. They are unrelated to any real financial product, index or company. Some scenarios, such as market crashes, draw inspiration from past market events, but the numbers and developments are not real.<br><br>The game’s presentation and evaluations (Cheap, Hot, rank ratings, etc.) are not a recommendation or advice for any particular investment method or for buying or selling any financial product, and they do not guarantee results or reproducibility in real markets. Please make real investment decisions at your own responsibility.',
+    disc_result: '* These results come from a simplified in-game model. They do not guarantee actual investment results, nor do they show that any particular method (such as DCA or market timing) is better than another.',
   }
 };
 
@@ -866,7 +890,7 @@ function playSfx(name) {
       g.gain.linearRampToValueAtTime(n.v || 0.07, st + 0.01);
       g.gain.exponentialRampToValueAtTime(0.0001, st + n.d);
       osc.connect(g);
-      g.connect(audioCtx.destination);
+      g.connect(sfxOut());
       osc.start(st);
       osc.stop(st + n.d + 0.03);
       len = Math.max(len, (n.at || 0) + n.d);
@@ -1023,7 +1047,7 @@ function bgmSetMood(m) {
 function bgmPump() {
   if (!audioCtx || !BGM.master) return;
   const now = audioCtx.currentTime;
-  const target = (BGM.active && BGM.on) ? (PAUSED ? 0.12 : 0.5) : 0;
+  const target = (BGM.active && BGM.on) ? (PAUSED ? 0.12 : 0.5) * VOL.bgm : 0;
   BGM.master.gain.setTargetAtTime(target, now, 0.35);
   if (!BGM.active || !BGM.on) { Object.values(BGM.voices).forEach(v => { v.on = false; }); return; }
   Object.keys(BGM_MOODS).forEach(k => {
@@ -1059,9 +1083,18 @@ function toggleBgm() {
   bgmSyncBtn();
   if (BGM.on && state.running) bgmStart();
 }
+const VOL = (() => { const f = (k, d) => { const v = parseFloat(lsGet(k)); return isFinite(v) ? Math.max(0, Math.min(1, v)) : d; }; return { bgm: f('st_vol_bgm', 1), sfx: f('st_vol_sfx', 1) }; })();
+BGM.on = VOL.bgm > 0;
+sfxMuted = VOL.sfx === 0;
+let sfxBus = null;
+function sfxOut() {
+  if (!sfxBus) { sfxBus = audioCtx.createGain(); sfxBus.connect(audioCtx.destination); }
+  sfxBus.gain.value = VOL.sfx;
+  return sfxBus;
+}
 function bgmSyncBtn() {
   const b = document.getElementById('btn-bgm');
-  if (b) b.style.opacity = BGM.on ? '1' : '0.4';
+  if (b) b.style.opacity = (VOL.bgm > 0 || VOL.sfx > 0) ? '1' : '0.4';
 }
 
 // ムード判定: 市場の下落(ドローダウン)を最優先、次に運用損益。ヒステリシス＋最低滞在つき
@@ -2100,6 +2133,7 @@ function endGame(bankrupt) {
     ${t('r_flow', { flow: fmtSigned(SALARY - state.livingCost), living: fmtYen(state.livingCost), n: state.forcedSales })}<br><br>
     ${t('r_rank')}: <strong style="color:var(--amber);font-size:18px;">${rank}</strong> <span style="color:var(--muted);font-size:11px;">(${t(DIFF === 'hard' ? 'diff_hard' : 'diff_normal')})</span><br><br>
     ${bankrupt ? t('r_bankrupt') : resultComment(total, jpV, usV, state.forcedSales)}
+    <br><br><span style="color:var(--muted);font-size:10.5px;">${t('disc_result')}</span>
   ` };
   playSfx(bankrupt ? 'end-bad' : (rank.startsWith('S') || rank.startsWith('A') ? 'end-good' : 'end-mid'));
   renderModal('result');
@@ -2196,6 +2230,7 @@ function renderModal(mode) {
     $('modal-title').textContent = 'SECTOR TERMINAL';
     $('btn-start').textContent = t('start');
   }
+  $('disc-wrap').style.display = (mode === 'start') ? 'block' : 'none';
   refreshSettingsUI();
   $('overlay').style.display = 'flex';
 }
@@ -2289,7 +2324,39 @@ document.getElementById('btn-cancel').onclick = () => { if (modalMode === 'resul
 document.getElementById('btn-settings').onclick = openSettings;
 document.querySelectorAll('[data-set]').forEach(el => { el.onclick = () => pickSetting(el.getAttribute('data-set'), el.getAttribute('data-val')); });
 document.getElementById('btn-mute').onclick = toggleMute;
-document.getElementById('btn-bgm').onclick = toggleBgm;
+const volPanel = document.getElementById('vol-panel');
+function volSyncUI() {
+  ['bgm', 'sfx'].forEach(k => {
+    document.getElementById('vol-' + k).value = Math.round(VOL[k] * 100);
+    document.getElementById('vol-' + k + '-v').textContent = Math.round(VOL[k] * 100);
+  });
+}
+document.getElementById('btn-bgm').onclick = (e) => { e.stopPropagation(); volSyncUI(); volPanel.style.display = volPanel.style.display === 'none' ? 'block' : 'none'; };
+volPanel.onclick = (e) => e.stopPropagation();
+document.addEventListener('click', () => { volPanel.style.display = 'none'; });
+document.getElementById('vol-bgm').oninput = (e) => {
+  ensureAudio();
+  VOL.bgm = e.target.value / 100;
+  lsSet('st_vol_bgm', VOL.bgm);
+  const was = BGM.on;
+  BGM.on = VOL.bgm > 0;
+  if (BGM.on && !was && state.running) bgmStart();
+  bgmPump();
+  document.getElementById('vol-bgm-v').textContent = e.target.value;
+  bgmSyncBtn();
+};
+document.getElementById('vol-sfx').oninput = (e) => {
+  ensureAudio();
+  VOL.sfx = e.target.value / 100;
+  lsSet('st_vol_sfx', VOL.sfx);
+  sfxMuted = VOL.sfx === 0;
+  document.getElementById('btn-mute').textContent = sfxMuted ? '🔇' : '🔊';
+  if (sfxBus) sfxBus.gain.value = VOL.sfx;
+  document.getElementById('vol-sfx-v').textContent = e.target.value;
+  bgmSyncBtn();
+};
+document.getElementById('vol-sfx').onchange = () => { ensureAudio(); playSfx('buy'); };
+document.getElementById('btn-mute').textContent = sfxMuted ? '🔇' : '🔊';
 bgmSyncBtn();
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && modalMode === 'settings') { closeSettings(); return; }
