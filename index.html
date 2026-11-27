@@ -492,6 +492,19 @@
     cursor: pointer;
   }
   .start-btn:hover { opacity: 0.9; }
+  .rk-wrap { margin-top: 12px; text-align: center; }
+  .rk-wrap summary { font-size: 12px; color: var(--cyan); cursor: pointer; }
+  .rk-tabs { display: flex; justify-content: center; gap: 6px; margin: 8px 0 4px; }
+  .rk-tabs .lang-btn { padding: 2px 14px; font-size: 11px; }
+  .rk-tabs [data-rkc="JPY"] { margin-left: 12px; }
+  .rk-title { font-size: 11px; color: var(--muted); margin: 6px 0 4px; text-align: center; }
+  .rk-tbl { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+  .rk-tbl th { color: var(--muted); font-weight: normal; font-size: 10.5px; text-align: right; padding: 2px 6px; border-bottom: 1px solid var(--border); }
+  .rk-tbl td { text-align: right; padding: 3px 6px; border-bottom: 1px solid var(--border); }
+  .rk-tbl th:first-child, .rk-tbl td:first-child { text-align: left; width: 30px; }
+  .rk-tbl th:last-child, .rk-tbl td:last-child { text-align: left; }
+  .rk-tbl tr.me td { background: rgba(0, 229, 255, 0.14); color: var(--cyan); font-weight: bold; }
+  .rk-empty { font-size: 11px; color: var(--muted); text-align: center; padding: 6px 0; }
   .disc-wrap { margin-top: 14px; text-align: center; }
   .disc-short { font-size: 10.5px; line-height: 1.6; color: var(--muted); }
   .disc-wrap details { margin-top: 4px; }
@@ -609,6 +622,10 @@
     </div>
     <p id="modal-desc" style="display:none"></p>
     <div class="btn-row"><button id="btn-cancel" class="sub-btn" style="display:none">キャンセル</button><button id="btn-start" class="start-btn">MARKET OPEN (START)</button></div>
+    <details id="rk-wrap" class="rk-wrap"><summary data-i18n="rk_link"></summary>
+      <div class="rk-tabs"><button class="lang-btn" data-rk="normal" data-i18n="diff_normal"></button><button class="lang-btn" data-rk="hard" data-i18n="diff_hard"></button><button class="lang-btn" data-rkc="JPY" data-i18n="rk_cur_JPY"></button><button class="lang-btn" data-rkc="USD" data-i18n="rk_cur_USD"></button></div>
+      <div id="rk-body"></div>
+    </details>
     <div id="disc-wrap" class="disc-wrap">
       <div class="disc-short" data-i18n="disc_short"></div>
       <details><summary data-i18n="disc_link"></summary><p class="disc-full" data-i18n="disc_full"></p></details>
@@ -683,6 +700,10 @@ const I18N = {
     c_big: '積立を大きく引き離しました。相場の波を読み切った10年です。', c_beat: '積立投資を上回りました。ニュースと値動きを味方にできた10年です。',
     c_mid: '{worse}の積立には勝ちましたが、{better}の積立には届きませんでした。', c_even: '積立とほぼ互角でした。このゲームの設定では、売買を重ねても積立の堅さが際立つ結果です。',
     c_lose: '積立の方が上でした。今回の設定では、コツコツ続けることが強みになった10年でした。', c_forced: ' 強制売却が多めでした。現金の余裕も戦略のうちです。',
+    rk_link: '🏆 自己ベスト TOP5', rk_title: '🏆 自己ベスト TOP5（{diff}）', rk_empty: 'まだありません。10年を完走すると載ります。',
+    rk_cur_JPY: '円', rk_cur_USD: 'ドル',
+    rk_h_total: '最終資産', rk_h_rank: 'ランク', rk_h_dca: '対積立', rk_h_event: '暴落', rk_me: '← 今回',
+    rk_first: '🎉 1位！自己ベスト更新です', rk_in: '🏆 {n}位にランクイン！', rk_out: '今回はTOP5圏外でした',
     play_again: 'PLAY AGAIN', start: 'MARKET OPEN (START)',
     diff_label: '難易度', diff_normal: 'ノーマル', diff_hard: 'ハード',
     diff_desc_normal: 'ノーマル：市場は穏やかで、生活費の上昇も緩やか。大きな下落は少なめ・浅め。ニュースの織り込みが遅く、先回りしやすい。',
@@ -746,6 +767,10 @@ const I18N = {
     c_big: 'You left DCA far behind — a decade of reading the market’s waves.', c_beat: 'You beat DCA. News and price action worked in your favor over the decade.',
     c_mid: 'You beat the {worse} DCA but fell short of the {better} DCA.', c_even: 'About even with DCA. In this game’s setup, DCA’s steadiness stands out despite all the trading.',
     c_lose: 'DCA came out ahead. In this game’s setup, simply sticking with it paid off over the decade.', c_forced: ' There were quite a few forced sales — keeping a cash cushion is part of strategy.',
+    rk_link: '🏆 Personal Best Top 5', rk_title: '🏆 Personal Best Top 5 ({diff})', rk_empty: 'Nothing yet. Finish all 10 years to get on the list.',
+    rk_cur_JPY: 'Yen', rk_cur_USD: 'USD',
+    rk_h_total: 'Net worth', rk_h_rank: 'Rank', rk_h_dca: 'vs DCA', rk_h_event: 'Crash', rk_me: '← This run',
+    rk_first: '🎉 #1! New personal best', rk_in: '🏆 Ranked #{n}!', rk_out: 'Outside the Top 5 this time',
     play_again: 'PLAY AGAIN', start: 'MARKET OPEN (START)',
     diff_label: 'Difficulty', diff_normal: 'Normal', diff_hard: 'Hard',
     diff_desc_normal: 'Normal: calmer markets, slower growth in living costs, fewer and shallower crashes. News is priced in slowly, so it is easier to get ahead of it.',
@@ -2131,6 +2156,56 @@ function resultComment(total, jpV, usV, forced) {
   return msg;
 }
 
+// ===== 自己ベストTOP5（localStorage。難易度×通貨ごと） =====
+const RK_N = 5;
+function rkKey(diff, cur) { return 'st_rank_' + diff + '_' + cur; }
+function rkLoad(diff, cur) {
+  let a = null;
+  try { a = JSON.parse(lsGet(rkKey(diff, cur)) || 'null'); } catch (e) { a = null; }
+  return Array.isArray(a) ? a.filter(x => x && typeof x.total === 'number').slice(0, RK_N) : [];
+}
+function rkRecord(diff, cur, entry) {
+  const list = rkLoad(diff, cur);
+  list.push(entry);
+  list.sort((a, b) => b.total - a.total);
+  const top = list.slice(0, RK_N);
+  lsSet(rkKey(diff, cur), JSON.stringify(top));
+  return top.findIndex(e => e.at === entry.at);
+}
+function rkCrash(e) {
+  if (e.crashId) { const sc = SCENARIOS.find(x => x.id === e.crashId); if (sc) return L(sc.name); }
+  if (e.crash === undefined) return '-';
+  if (!e.crash) return t('r_crash_none');
+  const sc = SCENARIOS.find(x => x.name.ja === e.crash || x.name.en === e.crash);
+  return sc ? L(sc.name) : e.crash;
+}
+function rkTable(diff, cur, hi) {
+  const list = rkLoad(diff, cur);
+  const dn = t(diff === 'hard' ? 'diff_hard' : 'diff_normal') + ' / ' + t('rk_cur_' + cur);
+  let h = `<div class="rk-title">${t('rk_title', { diff: dn })}</div>`;
+  if (!list.length) return h + `<div class="rk-empty">${t('rk_empty')}</div>`;
+  h += `<table class="rk-tbl"><tr><th></th><th>${t('rk_h_total')}</th><th>${t('rk_h_rank')}</th><th>${t('rk_h_dca')}</th><th>${t('rk_h_event')}</th></tr>`;
+  list.forEach((e, i) => {
+    const me = hi && e.at === hi.at;
+    const r = String(e.rank || '-').split(' ')[0];
+    const v = typeof e.vsDca === 'number' ? '×' + e.vsDca.toFixed(2) : '-';
+    h += `<tr${me ? ' class="me"' : ''}><td>${i + 1}</td><td>${fmtYen(e.total)}</td><td>${r}</td><td>${v}</td><td>${rkCrash(e)}${me ? ' ' + t('rk_me') : ''}</td></tr>`;
+  });
+  return h + '</table>';
+}
+let rkDiff = 'normal', rkCur = 'JPY', rkHi = null;
+function rkTabsHtml() {
+  const b = (attr, val, label, on) => `<button class="lang-btn${on ? ' on' : ''}" ${attr}="${val}">${label}</button>`;
+  return `<div class="rk-tabs">${b('data-rk', 'normal', t('diff_normal'), rkDiff === 'normal')}${b('data-rk', 'hard', t('diff_hard'), rkDiff === 'hard')}${b('data-rkc', 'JPY', t('rk_cur_JPY'), rkCur === 'JPY')}${b('data-rkc', 'USD', t('rk_cur_USD'), rkCur === 'USD')}</div>`;
+}
+function refreshRankBody() {
+  document.querySelectorAll('[data-rk]').forEach(b => { b.className = 'lang-btn' + (b.getAttribute('data-rk') === rkDiff ? ' on' : ''); });
+  document.querySelectorAll('[data-rkc]').forEach(b => { b.className = 'lang-btn' + (b.getAttribute('data-rkc') === rkCur ? ' on' : ''); });
+  const hi = (rkHi && rkHi.diff === rkDiff && rkHi.cur === rkCur) ? rkHi : null;
+  const html = rkTable(rkDiff, rkCur, hi);
+  ['rk-body', 'rk-res'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = html; });
+}
+
 function endGame(bankrupt) {
   state.running = false;
   bgmStop();
@@ -2149,6 +2224,17 @@ function endGame(bankrupt) {
   state.finalRank = rank;
   state.finalVsDca = vsDca;
 
+  // 記録TOP5（難易度ごと。破産は記録しない）
+  const hi = { at: Date.now() };
+  let msg = '';
+  if (!bankrupt) {
+    const pos = rkRecord(DIFF, HOME, { total, vsDca, rank, crash: state.crash ? state.crash.name : '', crashId: state.crash ? state.crash.type : '', at: hi.at });
+    msg = pos === 0 ? t('rk_first') : (pos > 0 ? t('rk_in', { n: pos + 1 }) : t('rk_out'));
+  }
+  rkDiff = DIFF; rkCur = HOME;
+  rkHi = bankrupt ? null : { at: hi.at, diff: DIFF, cur: HOME };
+  const bestHtml = (msg ? `<strong style="color:var(--amber)">${msg}</strong>` : '') + rkTabsHtml() + `<div id="rk-res">${rkTable(DIFF, HOME, rkHi)}</div>`;
+
   lastResult = { title: bankrupt ? t('res_title_bk') : t('res_title_ok'), html: `
     ${t('r_final')}: <strong style="color:var(--cyan);font-size:18px;">${fmtYen(total)}</strong><br>
     ${t('r_principal')}: ${fmtYen(contrib)}<br>
@@ -2157,7 +2243,7 @@ function endGame(bankrupt) {
     ${t('r_dca')}: ${t('jp')} <strong>${fmtYen(jpV)}</strong> / ${t('us')} <strong>${fmtYen(usV)}</strong><br>
     ${t('r_crash')}: ${state.crash ? t('r_crash_val', { y: Math.floor(state.crash.start / 12) + 1, name: state.crash.name }) : t('r_crash_none')}<br>
     ${t('r_flow', { flow: fmtSigned(SALARY - state.livingCost), living: fmtYen(state.livingCost), n: state.forcedSales })}<br><br>
-    ${t('r_rank')}: <strong style="color:var(--amber);font-size:18px;">${rank}</strong> <span style="color:var(--muted);font-size:11px;">(${t(DIFF === 'hard' ? 'diff_hard' : 'diff_normal')})</span><br><br>
+    ${t('r_rank')}: <strong style="color:var(--amber);font-size:18px;">${rank}</strong> <span style="color:var(--muted);font-size:11px;">(${t(DIFF === 'hard' ? 'diff_hard' : 'diff_normal')})</span><br><br>${bestHtml}<br>
     ${bankrupt ? t('r_bankrupt') : resultComment(total, jpV, usV, state.forcedSales)}
     <br><br><span style="color:var(--muted);font-size:10.5px;">${t('disc_result')}</span>
   ` };
@@ -2258,6 +2344,8 @@ function renderModal(mode) {
     $('btn-start').textContent = t('start');
   }
   $('disc-wrap').style.display = (mode === 'start') ? 'block' : 'none';
+  $('rk-wrap').style.display = (mode === 'start') ? 'block' : 'none';
+  if (mode === 'start') { rkHi = null; rkDiff = DIFF; rkCur = HOME; refreshRankBody(); }
   refreshSettingsUI();
   $('overlay').style.display = 'flex';
 }
@@ -2350,6 +2438,12 @@ document.getElementById('btn-start').onclick = () => {
 document.getElementById('btn-cancel').onclick = () => { if (modalMode === 'result') openSettings(); else if (modalMode === 'settings') closeSettings(); };
 document.getElementById('btn-settings').onclick = openSettings;
 document.querySelectorAll('[data-set]').forEach(el => { el.onclick = () => pickSetting(el.getAttribute('data-set'), el.getAttribute('data-val')); });
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest && ev.target.closest('[data-rk],[data-rkc]');
+  if (!b) return;
+  if (b.hasAttribute('data-rk')) rkDiff = b.getAttribute('data-rk'); else rkCur = b.getAttribute('data-rkc');
+  refreshRankBody();
+});
 document.getElementById('btn-mute').onclick = toggleMute;
 const volPanel = document.getElementById('vol-panel');
 function volSyncUI() {

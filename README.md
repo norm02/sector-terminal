@@ -28,7 +28,7 @@
 本ゲームは完全なフィクションです。実在の金融商品・企業とは関係なく、投資の推奨や助言ではありません。過去の市場の出来事に着想を得た演出を含みますが、数値や展開は実際のものではありません。現実の投資判断はご自身の責任で行ってください。全文はゲーム内のスタート画面にあります。
 
 ## データの扱い
-個人情報は収集しません。設定（言語・通貨・音量など）のみ、お使いのブラウザに保存されます。
+個人情報は収集しません。設定（言語・通貨・音量など）と自己ベストのみ、お使いのブラウザに保存されます。そのため、別の端末やブラウザには引き継がれません。
 
 ## ライセンス・利用について
 © 2026 bono. All rights reserved.
@@ -61,7 +61,7 @@ A browser-based investment simulation game. Over 10 in-game years, you trade 12 
 This game is entirely fictional. It has no connection to any real financial product or company, and it is not investment advice. Some scenarios draw inspiration from past market events, but the numbers and developments are not real. Please make real investment decisions at your own responsibility. The full text is on the game's start screen.
 
 ## Data
-No personal information is collected. Only your settings (language, currency, volume, etc.) are saved in your own browser.
+No personal information is collected. Only your settings (language, currency, volume, etc.) and your personal best are saved in your own browser, so they do not carry over to other devices or browsers.
 
 ## License
 © 2026 bono. All rights reserved.
