@@ -638,6 +638,8 @@
 </div><!-- /#stage -->
 
 <script>
+// itch.ioでは、すべてのHTML5ゲームが同じlocalStorageを共有する。他のゲームとキーがぶつからないよう、このゲーム固有のプレフィックスを付ける
+const LS_NS = 'sectortrader.';
 const SECTORS_INIT = [
   { id: 0,  code: '01', emoji: '🤖', name: '半導体・AI',       ex: '半導体・ソフト・AI',   price: 1600, basePer: 28, roe: 0.25, vol: 0.045, mb: 1.20, drift: 0.012, payout: 0.20, fx: true, desc: '半導体・ソフトウェア・AI関連の会社。成長が速いぶん値動きも大きく、金利上昇に弱い' },
   { id: 1,  code: '02', emoji: '🏦', name: '銀行・金融',       ex: '銀行・保険・証券',     price: 900,  basePer: 14, roe: 0.12, vol: 0.021, mb: 1.10, drift: 0.006, payout: 0.30, fx: true, desc: '銀行・保険・証券など。金利が上がると儲けが増えやすく、景気後退に弱い' },
@@ -936,7 +938,7 @@ function toggleMute() {
 
 // ===== BGM（Web Audioで生成。音源ファイル不要） =====
 const BGM = {
-  on: (() => { try { return localStorage.getItem('st_bgm') !== '0'; } catch (e) { return true; } })(),
+  on: (() => { try { return localStorage.getItem(LS_NS + 'bgm') !== '0'; } catch (e) { return true; } })(),
   active: false, mood: 'calm', prev: null, fadeUntil: 0, since: 0,
   ddS: 0, pnlS: 0, master: null, noise: null, timer: null, buses: {}, voices: {}
 };
@@ -1107,11 +1109,11 @@ function bgmStart() {
 function bgmStop() { BGM.active = false; bgmPump(); }
 function toggleBgm() {
   BGM.on = !BGM.on;
-  try { localStorage.setItem('st_bgm', BGM.on ? '1' : '0'); } catch (e) {}
+  try { localStorage.setItem(LS_NS + 'bgm', BGM.on ? '1' : '0'); } catch (e) {}
   bgmSyncBtn();
   if (BGM.on && state.running) bgmStart();
 }
-const VOL = (() => { const f = (k, d) => { const v = parseFloat(lsGet(k)); return isFinite(v) ? Math.max(0, Math.min(1, v)) : d; }; return { bgm: f('st_vol_bgm', 1), sfx: f('st_vol_sfx', 1) }; })();
+const VOL = (() => { const f = (k, d) => { const v = parseFloat(lsGet(k)); return isFinite(v) ? Math.max(0, Math.min(1, v)) : d; }; return { bgm: f('vol_bgm', 1), sfx: f('vol_sfx', 1) }; })();
 BGM.on = VOL.bgm > 0;
 sfxMuted = VOL.sfx === 0;
 let sfxBus = null;
@@ -2158,7 +2160,7 @@ function resultComment(total, jpV, usV, forced) {
 
 // ===== 自己ベストTOP5（localStorage。難易度×通貨ごと） =====
 const RK_N = 5;
-function rkKey(diff, cur) { return 'st_rank_' + diff + '_' + cur; }
+function rkKey(diff, cur) { return 'rank_' + diff + '_' + cur; }
 function rkLoad(diff, cur) {
   let a = null;
   try { a = JSON.parse(lsGet(rkKey(diff, cur)) || 'null'); } catch (e) { a = null; }
@@ -2257,15 +2259,15 @@ let modalMode = 'start';
 let prevModal = 'start';
 let PAUSED = false;
 let lastResult = { title: '', html: '' };
-function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
-function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
-const LINES = (() => { let o = {}; try { o = JSON.parse(lsGet('st_lines2') || '{}') || {}; } catch (e) {} return { fair: o.fair !== false, ma25: o.ma25 !== false, ma200: o.ma200 !== false }; })();
-const CHART_RANGES = [1, 2].map(n => { const v = lsGet('st_range' + n) || lsGet('st_range'); return (v === '3y' || v === 'all') ? v : '1y'; });
+function lsGet(k) { try { return localStorage.getItem(LS_NS + k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(LS_NS + k, v); } catch (e) {} }
+const LINES = (() => { let o = {}; try { o = JSON.parse(lsGet('lines2') || '{}') || {}; } catch (e) {} return { fair: o.fair !== false, ma25: o.ma25 !== false, ma200: o.ma200 !== false }; })();
+const CHART_RANGES = [1, 2].map(n => { const v = lsGet('range' + n); return (v === '3y' || v === 'all') ? v : '1y'; });
 const RANGE_TICKS = { '1y': 96, '3y': 288 };
-let CHART_TYPE = lsGet('st_ctype') === 'candle' ? 'candle' : 'line';
+let CHART_TYPE = lsGet('ctype') === 'candle' ? 'candle' : 'line';
 function currentSettings() { return { lang: LANG, cur: HOME, diff: DIFF }; }
 function saveSettings() {
-  lsSet('st_settings', JSON.stringify(currentSettings()));
+  lsSet('settings', JSON.stringify(currentSettings()));
   try { history.replaceState(null, '', `#${LANG}-${HOME.toLowerCase()}-${DIFF}`); } catch (e) {}
 }
 function applyLang() {
@@ -2383,7 +2385,7 @@ function applyPendingAndRestart() {
 }
 function loadInitialSettings() {
   let saved = null;
-  const raw = lsGet('st_settings');
+  const raw = lsGet('settings');
   if (raw) { try { saved = JSON.parse(raw); } catch (e) { saved = null; } }
   const h = (typeof location !== 'undefined' ? (location.hash || '') : '').replace('#', '').toLowerCase();
   const nav = (typeof navigator !== 'undefined' && navigator.language) ? navigator.language.toLowerCase() : 'ja';
@@ -2460,7 +2462,7 @@ document.addEventListener('click', () => { volPanel.style.display = 'none'; });
 document.getElementById('vol-bgm').oninput = (e) => {
   ensureAudio();
   VOL.bgm = e.target.value / 100;
-  lsSet('st_vol_bgm', VOL.bgm);
+  lsSet('vol_bgm', VOL.bgm);
   const was = BGM.on;
   BGM.on = VOL.bgm > 0;
   if (BGM.on && !was && state.running) bgmStart();
@@ -2471,7 +2473,7 @@ document.getElementById('vol-bgm').oninput = (e) => {
 document.getElementById('vol-sfx').oninput = (e) => {
   ensureAudio();
   VOL.sfx = e.target.value / 100;
-  lsSet('st_vol_sfx', VOL.sfx);
+  lsSet('vol_sfx', VOL.sfx);
   sfxMuted = VOL.sfx === 0;
   document.getElementById('btn-mute').textContent = sfxMuted ? '🔇' : '🔊';
   if (sfxBus) sfxBus.gain.value = VOL.sfx;
@@ -2495,13 +2497,13 @@ function refreshLineToggles() {
   document.querySelectorAll('[data-ctype]').forEach(el => el.classList.toggle('on', el.getAttribute('data-ctype') === CHART_TYPE));
 }
 document.querySelectorAll('[data-line]').forEach(el => {
-  el.onclick = () => { const k = el.getAttribute('data-line'); if (k === 'ma25' && CHART_RANGES.every(r => r === 'all')) return; LINES[k] = !LINES[k]; lsSet('st_lines2', JSON.stringify(LINES)); refreshLineToggles(); drawCanvas(); };
+  el.onclick = () => { const k = el.getAttribute('data-line'); if (k === 'ma25' && CHART_RANGES.every(r => r === 'all')) return; LINES[k] = !LINES[k]; lsSet('lines2', JSON.stringify(LINES)); refreshLineToggles(); drawCanvas(); };
 });
 document.querySelectorAll('[data-range]').forEach(el => {
-  el.onclick = () => { const sl = +el.getAttribute('data-slot'); CHART_RANGES[sl] = el.getAttribute('data-range'); lsSet('st_range' + (sl + 1), CHART_RANGES[sl]); refreshLineToggles(); drawCanvas(); };
+  el.onclick = () => { const sl = +el.getAttribute('data-slot'); CHART_RANGES[sl] = el.getAttribute('data-range'); lsSet('range' + (sl + 1), CHART_RANGES[sl]); refreshLineToggles(); drawCanvas(); };
 });
 document.querySelectorAll('[data-ctype]').forEach(el => {
-  el.onclick = () => { CHART_TYPE = el.getAttribute('data-ctype'); lsSet('st_ctype', CHART_TYPE); refreshLineToggles(); drawCanvas(); };
+  el.onclick = () => { CHART_TYPE = el.getAttribute('data-ctype'); lsSet('ctype', CHART_TYPE); refreshLineToggles(); drawCanvas(); };
 });
 refreshLineToggles();
 window.addEventListener('resize', () => { fitStage(); drawCanvas(); drawAssetChart(); });
