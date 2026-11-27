@@ -2359,6 +2359,7 @@ function openSettings() {
 }
 function closeSettings() {
   pending = null;
+  PAUSED = false;
   applyLang();
   if (prevModal === 'result') { renderModal('result'); return; }
   document.getElementById('overlay').style.display = 'none';
@@ -2427,6 +2428,7 @@ document.getElementById('marketCanvas').onclick = (e) => {
 
 document.getElementById('btn-start').onclick = () => {
   if (modalMode === 'settings') { applyPendingAndRestart(); return; }
+  PAUSED = false;
   ensureAudio();
   initGame();
   playSfx('toast-good');
