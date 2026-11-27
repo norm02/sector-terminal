@@ -503,6 +503,8 @@
   .vol-row > span:first-child { width: 54px; }
   .vol-row input[type=range] { flex: 1; min-width: 0; accent-color: var(--cyan); cursor: pointer; }
   .vol-row .vv { width: 26px; text-align: right; color: var(--text); }
+  .ct-seg { margin-left: auto; display: flex; gap: 4px; }
+  .ct-seg .range-btn { padding: 1px 10px; }
   .disc-full { font-size: 10.5px !important; line-height: 1.7 !important; color: var(--muted) !important; text-align: left !important; margin: 8px 0 0 !important; }
 </style>
 </head>
@@ -535,7 +537,7 @@
   <!-- TOP MONITOR -->
   <section id="top-monitor">
     <div id="canvas-wrapper">
-      <div class="line-bar"><span class="lb-label" data-i18n="ln_title"></span><button class="line-chip on" data-line="fair"><i style="background:#ffab00"></i><span data-i18n="ln_fair"></span></button><button class="line-chip on" data-line="ma25"><i style="background:#4fc3f7"></i><span data-i18n="ln_ma25"></span></button><button class="line-chip on" data-line="ma200"><i style="background:#b388ff"></i><span data-i18n="ln_ma200"></span></button></div>
+      <div class="line-bar"><span class="lb-label" data-i18n="ln_title"></span><button class="line-chip on" data-line="fair"><i style="background:#ffab00"></i><span data-i18n="ln_fair"></span></button><button class="line-chip on" data-line="ma25"><i style="background:#4fc3f7"></i><span data-i18n="ln_ma25"></span></button><button class="line-chip on" data-line="ma200"><i style="background:#b388ff"></i><span data-i18n="ln_ma200"></span></button><span class="ct-seg"><button class="range-btn" data-ctype="line" data-i18n="ct_line"></button><button class="range-btn" data-ctype="candle" data-i18n="ct_candle"></button></span></div>
       <div id="canvas-area"><canvas id="marketCanvas"></canvas></div>
       <div class="range-bar"><div class="range-group"><button class="range-btn" data-slot="0" data-range="1y" data-i18n="rg_1y"></button><button class="range-btn" data-slot="0" data-range="3y" data-i18n="rg_3y"></button><button class="range-btn" data-slot="0" data-range="all" data-i18n="rg_all"></button></div><div class="range-group"><button class="range-btn" data-slot="1" data-range="1y" data-i18n="rg_1y"></button><button class="range-btn" data-slot="1" data-range="3y" data-i18n="rg_3y"></button><button class="range-btn" data-slot="1" data-range="all" data-i18n="rg_all"></button></div></div>
       <div class="slot-bar">
@@ -645,7 +647,7 @@ const I18N = {
     tip_pnl: '総資産 − 元本。元本は「初期資金＋これまでの投資可能余剰の合計」です。配当も含みます。プラスなら、運用で増やせています',
     tip_flow: '毎月の給与 − 生活費（＝毎月投資できるお金）。物価のニュースで生活費が上がると減ります。現金が足りない月は、保有ETFが自動で売られます',
     tip_fx: '1ドルが何円か。数字が大きいほど円安。米国のETFは円建てなので、円安で有利・円高で不利になります',
-    mute_title: '効果音 ON/OFF（Mキー）', bgm_title: '音量（BGM・効果音）', vol_bgm: 'BGM', vol_sfx: '効果音', news_empty: '— ニュース待機中 —',
+    mute_title: '効果音 ON/OFF（Mキー）', bgm_title: '音量（BGM・効果音）', vol_bgm: 'BGM', vol_sfx: '効果音', ct_line: 'ライン', ct_candle: 'ローソク足', news_empty: '— ニュース待機中 —',
     sec_title: 'ALL ETF (クリックで下段操作へ)', sec_legend: '🔥過熱 / 💎割安 / 📈高ROE',
     asset_title: '総資産の推移（白線）',
     asset_legend: '<i class="dash"></i>元本 <b style="color:var(--cyan)">･･積立(日本)</b> <b style="color:var(--magenta)">･･積立(米国)</b>',
@@ -708,7 +710,7 @@ const I18N = {
     tip_pnl: 'Net worth − principal. Principal = initial cash + cumulative monthly investable cash. Dividends count. Positive means your investing is adding value.',
     tip_flow: 'Monthly salary − living costs (= cash you can invest each month). Inflation news raises living costs. When cash runs short, holdings are sold automatically.',
     tip_fx: 'Yen per dollar. A higher number means a weaker yen. The Japan Total ETF is yen-based, so a weaker yen lowers its dollar value.',
-    mute_title: 'Sound ON/OFF (M key)', bgm_title: 'Volume (Music / Sound FX)', vol_bgm: 'Music', vol_sfx: 'Sound FX', news_empty: '— Waiting for news —',
+    mute_title: 'Sound ON/OFF (M key)', bgm_title: 'Volume (Music / Sound FX)', vol_bgm: 'Music', vol_sfx: 'Sound FX', ct_line: 'Line', ct_candle: 'Candles', news_empty: '— Waiting for news —',
     sec_title: 'ALL ETFs (click to trade below)', sec_legend: '🔥Hot / 💎Cheap / 📈High ROE',
     asset_title: 'Net worth over time (white)',
     asset_legend: '<i class="dash"></i>Principal <b style="color:var(--cyan)">･･DCA Japan</b> <b style="color:var(--magenta)">･･DCA US</b>',
@@ -1106,19 +1108,19 @@ function bgmJudge(dd, pnl) {
   const ok = dw >= BGM_MIN_DWELL, d = BGM.ddS, p = BGM.pnlS;
   let next = BGM.mood;
   if (BGM.mood === 'crisis') {
-    if (ok && d >= -0.06) next = (p >= 0.10 && d >= -0.05) ? 'bull' : 'calm';
+    if (ok && d >= -0.06) next = (p >= 0.05 && d >= -0.05) ? 'bull' : 'calm';
   } else if (d <= -0.12 && (ok || d <= -0.18)) next = 'crisis';
-  else if (BGM.mood === 'calm') { if (ok && p >= 0.10 && d >= -0.05) next = 'bull'; }
-  else if (BGM.mood === 'bull') { if (ok && (p < 0.04 || d < -0.05)) next = 'calm'; }
+  else if (BGM.mood === 'calm') { if (ok && p >= 0.05 && d >= -0.04) next = 'bull'; }
+  else if (BGM.mood === 'bull') { if (ok && (p < 0.01 || d < -0.06)) next = 'calm'; }
   return next;
 }
 function bgmTick() {
   if (!BGM.active || !audioCtx) return;
   const ddOf = (s) => { const h = s.history.slice(-VIEW_TICKS); return s.price / Math.max(...h) - 1; };
   const dd = (ddOf(idxOf('jpIndex')) + ddOf(idxOf('usIndex'))) / 2;
-  const total = state.cash + state.sectors.reduce((a, s) => a + s.shares * s.price, 0);
-  const pnl = (total - state.contrib) / Math.max(1, state.contrib);
-  bgmSetMood(bgmJudge(dd, pnl));
+  const trOf = (s) => { const h = s.history.slice(-MA_LONG); return s.price / (h.reduce((a, b) => a + b, 0) / h.length) - 1; };
+  const tr = (trOf(idxOf('jpIndex')) + trOf(idxOf('usIndex'))) / 2;
+  bgmSetMood(bgmJudge(dd, tr));
 }
 
 const SECTOR_COLORS = ['#00e5ff', '#ffab00', '#ff4081', '#00e676', '#b388ff', '#ff8a65', '#64ffda', '#ffd740', '#82b1ff', '#f48fb1', '#9ccc65', '#40c4ff', '#ffcc80'];
@@ -2034,11 +2036,34 @@ function drawChartSlot(ctx, sec, ox, oy, w, h, rg) {
     ctx.fillText(`AVG ${axisPx(sec.avgCost)}`, ox + padL + 4, Math.max(oy + padT + 10, avgY - 4));
   }
 
-  ctx.strokeStyle = '#e2e8f0';
-  ctx.lineWidth = 2.2;
-  ctx.beginPath();
-  polyline(hs);
-  ctx.stroke();
+  if (CHART_TYPE === 'candle') {
+    const g = Math.max(1, Math.round(n / 48));
+    for (let e = n - 1; e >= 0; e -= g) {
+      const s0 = Math.max(0, e - g + 1);
+      const op = s0 > 0 ? hs[s0 - 1] : hs[s0];
+      const cl = hs[e];
+      let hi = Math.max(op, cl), lo = Math.min(op, cl);
+      for (let k = s0; k <= e; k++) { if (hs[k] > hi) hi = hs[k]; if (hs[k] < lo) lo = hs[k]; }
+      const x = (xAt(s0) + xAt(e)) / 2;
+      const bw2 = Math.max(2, (cw / n) * g * 0.7);
+      const col = cl >= op ? '#00e676' : '#ff3d57';
+      ctx.strokeStyle = col;
+      ctx.fillStyle = col;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x, toY(hi));
+      ctx.lineTo(x, toY(lo));
+      ctx.stroke();
+      const yt = toY(Math.max(op, cl)), yb = toY(Math.min(op, cl));
+      ctx.fillRect(x - bw2 / 2, yt, bw2, Math.max(1, yb - yt));
+    }
+  } else {
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    polyline(hs);
+    ctx.stroke();
+  }
 
   const vTop = oy + padT + chP + gapV;
   const vMax = Math.max(1.6, ...vs);
@@ -2151,6 +2176,7 @@ function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 const LINES = (() => { let o = {}; try { o = JSON.parse(lsGet('st_lines2') || '{}') || {}; } catch (e) {} return { fair: o.fair !== false, ma25: o.ma25 !== false, ma200: o.ma200 !== false }; })();
 const CHART_RANGES = [1, 2].map(n => { const v = lsGet('st_range' + n) || lsGet('st_range'); return (v === '3y' || v === 'all') ? v : '1y'; });
 const RANGE_TICKS = { '1y': 96, '3y': 288 };
+let CHART_TYPE = lsGet('st_ctype') === 'candle' ? 'candle' : 'line';
 function currentSettings() { return { lang: LANG, cur: HOME, diff: DIFF }; }
 function saveSettings() {
   lsSet('st_settings', JSON.stringify(currentSettings()));
@@ -2370,12 +2396,16 @@ function refreshLineToggles() {
     el.classList.toggle('dis', k === 'ma25' && CHART_RANGES.every(r => r === 'all'));
   });
   document.querySelectorAll('[data-range]').forEach(el => el.classList.toggle('on', el.getAttribute('data-range') === CHART_RANGES[+el.getAttribute('data-slot')]));
+  document.querySelectorAll('[data-ctype]').forEach(el => el.classList.toggle('on', el.getAttribute('data-ctype') === CHART_TYPE));
 }
 document.querySelectorAll('[data-line]').forEach(el => {
   el.onclick = () => { const k = el.getAttribute('data-line'); if (k === 'ma25' && CHART_RANGES.every(r => r === 'all')) return; LINES[k] = !LINES[k]; lsSet('st_lines2', JSON.stringify(LINES)); refreshLineToggles(); drawCanvas(); };
 });
 document.querySelectorAll('[data-range]').forEach(el => {
   el.onclick = () => { const sl = +el.getAttribute('data-slot'); CHART_RANGES[sl] = el.getAttribute('data-range'); lsSet('st_range' + (sl + 1), CHART_RANGES[sl]); refreshLineToggles(); drawCanvas(); };
+});
+document.querySelectorAll('[data-ctype]').forEach(el => {
+  el.onclick = () => { CHART_TYPE = el.getAttribute('data-ctype'); lsSet('st_ctype', CHART_TYPE); refreshLineToggles(); drawCanvas(); };
 });
 refreshLineToggles();
 window.addEventListener('resize', () => { fitStage(); drawCanvas(); drawAssetChart(); });
