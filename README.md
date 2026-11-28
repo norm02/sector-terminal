@@ -1,11 +1,12 @@
 # SECTOR TRADER
+![Screenshot](assets\sector-trader-cover-1260x1000.png)
 
 10年間で、12本のETF（10業種＋日本総合・米国総合）を売買し、同じお金を毎月積み立てた場合（積立）と、最終的な資産を比べて評価される、ブラウザ向けの投資シミュレーションゲームです。
 
-![ゲーム画面](assets/screenshot-line.png)
+![Screenshot](assets/screenshot-line.png)
 
 ## 遊ぶ
-[URL]
+https://bonosyn.itch.io/sector-trader
 
 - ジャンル: 投資シミュレーション（1プレイ約4分）
 - 対応: PCブラウザ（スマホは未対応。画面は1280×720基準で拡大縮小）
@@ -46,7 +47,7 @@ A browser-based investment simulation game. Over 10 in-game years, you trade 12 
 ![Screenshot](assets/screenshot-line-en.png)
 
 ## Play
-[URL]
+https://bonosyn.itch.io/sector-trader
 
 - PC browsers only (not for phones). The game has sound; adjust music and sound effects separately from the 🎵 button.
 - Languages: Japanese / English. Currencies: yen / dollar.
